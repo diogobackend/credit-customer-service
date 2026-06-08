@@ -2,6 +2,9 @@
 
 Microservice responsável pelo cadastro, consulta e gerenciamento de clientes dentro da **Credit Journey Platform**.
 
+Doc do sistema completo:
+https://github.com/diogobackend/credit-journey-platform
+
 Este serviço representa o contexto de clientes em uma plataforma fictícia de crédito para banco digital. Ele é o ponto inicial da jornada: antes de avaliar elegibilidade, calcular limite ou enviar comunicações, o cliente precisa existir e ter seus dados cadastrais registrados.
 
 ---
