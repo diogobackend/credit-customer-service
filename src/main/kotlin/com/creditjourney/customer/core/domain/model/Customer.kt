@@ -1,0 +1,46 @@
+package com.creditjourney.customer.core.domain.model
+
+import com.creditjourney.customer.core.domain.valueobject.Document
+import com.creditjourney.customer.core.domain.valueobject.Email
+import com.creditjourney.customer.core.domain.valueobject.Income
+import java.time.LocalDateTime
+import java.util.UUID
+
+data class Customer(
+    val id: UUID,
+    val name: String,
+    val document: Document,
+    val email: Email,
+    val phone: String?,
+    val income: Income,
+    val status: CustomerStatus,
+    val createdAt: LocalDateTime,
+    val updatedAt: LocalDateTime? = null
+) {
+    init {
+        require(name.isNotBlank()) {
+            "Customer name must not be blank"
+        }
+    }
+
+    companion object {
+        fun create(
+            name: String,
+            document: Document,
+            email: Email,
+            phone: String?,
+            income: Income
+        ): Customer {
+            return Customer(
+                id = UUID.randomUUID(),
+                name = name.trim(),
+                document = document,
+                email = email,
+                phone = phone?.trim(),
+                income = income,
+                status = CustomerStatus.ACTIVE,
+                createdAt = LocalDateTime.now()
+            )
+        }
+    }
+}
