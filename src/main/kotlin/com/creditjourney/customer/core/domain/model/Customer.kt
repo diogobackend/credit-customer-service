@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 data class Customer(
-    val id: UUID,
+    val customerId: UUID,
     val name: String,
     val document: Document,
     val email: Email,
@@ -32,7 +32,7 @@ data class Customer(
             income: Income
         ): Customer {
             return Customer(
-                id = UUID.randomUUID(),
+                customerId = UUID.randomUUID(),
                 name = name.trim(),
                 document = document,
                 email = email,
