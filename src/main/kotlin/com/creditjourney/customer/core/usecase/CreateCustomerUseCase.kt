@@ -15,16 +15,26 @@ class CreateCustomerUseCase(
 
     override fun create(input: CreateCustomerInput): Customer {
         val document = Document(input.document)
+        val email = Email(input.email)
+        val phone = input.phone?.trim()
 
         if (customerRepositoryPort.existsByDocument(document)) {
-            throw CustomerAlreadyExistsException(input.document)
+            throw CustomerAlreadyExistsException("document", document.value)
+        }
+
+        if (customerRepositoryPort.existsByEmail(email)) {
+            throw CustomerAlreadyExistsException("email", email.value)
+        }
+
+        if (!phone.isNullOrBlank() && customerRepositoryPort.existsByPhone(phone)) {
+            throw CustomerAlreadyExistsException("phone", phone)
         }
 
         val customer = Customer.create(
             name = input.name,
             document = document,
-            email = Email(input.email),
-            phone = input.phone,
+            email = email,
+            phone = phone,
             income = Income(input.income)
         )
 

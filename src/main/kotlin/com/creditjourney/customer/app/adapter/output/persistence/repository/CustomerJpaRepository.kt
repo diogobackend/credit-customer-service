@@ -5,5 +5,9 @@ import org.hibernate.validator.constraints.UUID
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
+
     fun existsByDocument(document: String): Boolean
+    fun existsByEmail(email: String): Boolean
+    fun existsByPhone(phone: String): Boolean
+
 }

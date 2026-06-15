@@ -5,6 +5,7 @@ import com.creditjourney.customer.app.adapter.output.persistence.mapper.toEntity
 import com.creditjourney.customer.app.adapter.output.persistence.repository.CustomerJpaRepository
 import com.creditjourney.customer.core.domain.model.Customer
 import com.creditjourney.customer.core.domain.valueobject.Document
+import com.creditjourney.customer.core.domain.valueobject.Email
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import org.springframework.stereotype.Component
 
@@ -15,6 +16,12 @@ class CustomerPersistenceAdapter(
 
     override fun existsByDocument(document: Document): Boolean =
         customerJpaRepository.existsByDocument(document.value)
+
+    override fun existsByEmail(email: Email): Boolean =
+        customerJpaRepository.existsByEmail(email.value)
+
+    override fun existsByPhone(phone: String): Boolean =
+        customerJpaRepository.existsByPhone(phone)
 
     override fun save(customer: Customer): Customer =
         customerJpaRepository.save(customer.toEntity()).toDomain()

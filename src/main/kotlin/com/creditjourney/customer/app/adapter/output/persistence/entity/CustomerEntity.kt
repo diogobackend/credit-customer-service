@@ -25,10 +25,10 @@ class CustomerEntity(
     @Column(name = "document", nullable = false, unique = true, length = 11)
     var document: String,
 
-    @Column(name = "email", nullable = false, length = 150)
+    @Column(name = "email", nullable = false, unique = true, length = 150)
     var email: String,
 
-    @Column(name = "phone", length = 20)
+    @Column(name = "phone", unique = true, length = 20)
     var phone: String?,
 
     @Column(name = "income", nullable = false, precision = 19, scale = 2)
