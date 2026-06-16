@@ -1,5 +1,6 @@
 package com.creditjourney.customer.app.adapter.input.web.controllers
 
+import com.creditjourney.customer.app.adapter.input.web.swagger.CustomerApi
 import com.creditjourney.customer.app.adapter.input.web.mappers.toInput
 import com.creditjourney.customer.app.adapter.input.web.mappers.toResponse
 import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerRequest
@@ -17,10 +18,10 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api/v1/customers")
 class CustomerController(
     private val createCustomerPort: CreateCustomerPort
-) {
+) : CustomerApi {
 
     @PostMapping
-    fun create(
+    override fun create(
         @Valid @RequestBody request: CreateCustomerRequest
     ): ResponseEntity<CustomerResponse> {
         val customer = createCustomerPort.create(request.toInput())
