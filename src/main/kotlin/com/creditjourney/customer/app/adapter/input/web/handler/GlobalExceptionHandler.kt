@@ -2,6 +2,7 @@ package com.creditjourney.customer.app.adapter.input.web.handler
 
 import com.creditjourney.customer.app.adapter.input.web.responses.ErrorResponse
 import com.creditjourney.customer.core.domain.exception.CustomerAlreadyExistsException
+import com.creditjourney.customer.core.domain.exception.CustomerNotFoundException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -18,6 +19,7 @@ class GlobalExceptionHandler {
         const val INVALID_REQUEST = "Invalid request"
         const val INVALID_REQUEST_BODY = "Invalid request body"
         const val UNEXPECTED_ERROR = "Unexpected error"
+        const val CUSTOMER_NOT_FOUND = "Customer not found"
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
@@ -70,6 +72,15 @@ class GlobalExceptionHandler {
         errorResponse(
             status = HttpStatus.INTERNAL_SERVER_ERROR,
             message = UNEXPECTED_ERROR
+        )
+
+    @ExceptionHandler(CustomerNotFoundException::class)
+    fun handleCustomerNotFoundException(
+        exception: CustomerNotFoundException
+    ): ResponseEntity<ErrorResponse> =
+        errorResponse(
+            status = HttpStatus.NOT_FOUND,
+            message = exception.message ?: CUSTOMER_NOT_FOUND
         )
 
     private fun errorResponse(

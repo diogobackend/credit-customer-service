@@ -8,6 +8,7 @@ import com.creditjourney.customer.core.domain.valueobject.Document
 import com.creditjourney.customer.core.domain.valueobject.Email
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import org.springframework.stereotype.Component
+import java.util.UUID
 
 @Component
 class CustomerPersistenceAdapter(
@@ -25,4 +26,9 @@ class CustomerPersistenceAdapter(
 
     override fun save(customer: Customer): Customer =
         customerJpaRepository.save(customer.toEntity()).toDomain()
+
+    override fun findById(customerId: UUID): Customer? =
+        customerJpaRepository.findById(customerId)
+            .map { it.toDomain() }
+            .orElse(null)
 }

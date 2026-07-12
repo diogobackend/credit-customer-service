@@ -1,8 +1,8 @@
 package com.creditjourney.customer.app.adapter.output.persistence.repository
 
 import com.creditjourney.customer.app.adapter.output.persistence.entity.CustomerEntity
-import org.hibernate.validator.constraints.UUID
 import org.springframework.data.jpa.repository.JpaRepository
+import java.util.UUID
 
 interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
 
