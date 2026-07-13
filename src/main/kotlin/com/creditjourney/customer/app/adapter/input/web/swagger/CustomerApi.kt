@@ -178,4 +178,54 @@ interface CustomerApi {
         @Parameter(description = "Quantidade de registros por página", example = "30")
         @RequestParam(defaultValue = "30") size: Int
     ): ResponseEntity<CustomerSliceResponse>
+
+    @Operation(
+        summary = "Deletar cliente",
+        description = "Inativa um cliente pelo customerId."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Cliente deletado com sucesso"
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "customerId inválido",
+                content = [
+                    Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = Schema(implementation = ErrorResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Cliente não encontrado",
+                content = [
+                    Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = Schema(implementation = ErrorResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Erro inesperado",
+                content = [
+                    Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = Schema(implementation = ErrorResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
+    fun delete(
+        @Parameter(
+            description = "Identificador único do cliente",
+            example = "11111111-1111-1111-1111-111111111111"
+        )
+        @PathVariable customerId: UUID
+    ): ResponseEntity<Void>
 }

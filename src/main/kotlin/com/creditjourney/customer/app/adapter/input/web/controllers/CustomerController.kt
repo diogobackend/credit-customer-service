@@ -6,13 +6,15 @@ import com.creditjourney.customer.app.adapter.input.web.mappers.toResponse
 import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerSliceResponse
-import com.creditjourney.customer.core.port.input.CreateCustomerPort
+import com.creditjourney.customer.core.port.CreateCustomerPort
+import com.creditjourney.customer.core.port.DeleteCustomerPort
 import com.creditjourney.customer.core.port.input.FindAllCustomersInput
-import com.creditjourney.customer.core.port.input.FindAllCustomersPort
-import com.creditjourney.customer.core.port.input.FindCustomerByIdPort
+import com.creditjourney.customer.core.port.FindAllCustomersPort
+import com.creditjourney.customer.core.port.FindCustomerByIdPort
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -27,7 +29,8 @@ import java.util.UUID
 class CustomerController(
     private val createCustomerPort: CreateCustomerPort,
     private val findCustomerByIdPort: FindCustomerByIdPort,
-    private val findAllCustomersPort: FindAllCustomersPort
+    private val findAllCustomersPort: FindAllCustomersPort,
+    private val deleteCustomerPort: DeleteCustomerPort
 ) : CustomerApi {
 
     @PostMapping
@@ -63,5 +66,14 @@ class CustomerController(
         val customer = findCustomerByIdPort.findById(customerId)
 
         return ResponseEntity.ok(customer.toResponse())
+    }
+
+    @DeleteMapping("/{customerId}")
+    override fun delete(
+        @PathVariable customerId: UUID
+    ): ResponseEntity<Void> {
+        deleteCustomerPort.delete(customerId)
+
+        return ResponseEntity.noContent().build()
     }
 }

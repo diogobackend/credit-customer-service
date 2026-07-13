@@ -1,4 +1,4 @@
-package com.creditjourney.customer.core.port.input
+package com.creditjourney.customer.core.port
 
 import com.creditjourney.customer.core.domain.model.Customer
 import java.util.UUID

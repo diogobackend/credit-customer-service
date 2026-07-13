@@ -8,7 +8,7 @@ import com.creditjourney.customer.core.domain.valueobject.Document
 import com.creditjourney.customer.core.domain.valueobject.Email
 import com.creditjourney.customer.core.domain.valueobject.Income
 import com.creditjourney.customer.core.port.input.CreateCustomerInput
-import com.creditjourney.customer.core.port.input.CreateCustomerPort
+import com.creditjourney.customer.core.port.CreateCustomerPort
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 
 open class CreateCustomerUseCase(

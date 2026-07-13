@@ -1,10 +1,12 @@
 package com.creditjourney.customer.app.configuration
 
-import com.creditjourney.customer.core.port.input.CreateCustomerPort
-import com.creditjourney.customer.core.port.input.FindAllCustomersPort
-import com.creditjourney.customer.core.port.input.FindCustomerByIdPort
+import com.creditjourney.customer.core.port.CreateCustomerPort
+import com.creditjourney.customer.core.port.DeleteCustomerPort
+import com.creditjourney.customer.core.port.FindAllCustomersPort
+import com.creditjourney.customer.core.port.FindCustomerByIdPort
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import com.creditjourney.customer.core.usecase.CreateCustomerUseCase
+import com.creditjourney.customer.core.usecase.DeleteCustomerUseCase
 import com.creditjourney.customer.core.usecase.FindAllCustomersUseCase
 import com.creditjourney.customer.core.usecase.FindCustomerByIdUseCase
 import org.springframework.context.annotation.Bean
@@ -30,4 +32,14 @@ class UseCaseConfiguration {
         customerRepositoryPort: CustomerRepositoryPort
     ): FindAllCustomersPort =
         FindAllCustomersUseCase(customerRepositoryPort)
+
+    @Bean
+    fun deleteCustomerPort(
+        findCustomerByIdPort: FindCustomerByIdPort,
+        customerRepositoryPort: CustomerRepositoryPort
+    ): DeleteCustomerPort =
+        DeleteCustomerUseCase(
+            findCustomerByIdPort = findCustomerByIdPort,
+            customerRepositoryPort = customerRepositoryPort
+        )
 }

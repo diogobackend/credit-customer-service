@@ -43,4 +43,10 @@ data class Customer(
             )
         }
     }
+
+    fun inactivate(): Customer =
+        copy(
+            status = CustomerStatus.INACTIVE,
+            updatedAt = LocalDateTime.now()
+        )
 }

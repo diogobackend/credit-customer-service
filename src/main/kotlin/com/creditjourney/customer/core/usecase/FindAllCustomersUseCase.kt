@@ -2,7 +2,7 @@ package com.creditjourney.customer.core.usecase
 
 import com.creditjourney.customer.app.configuration.logs.LogInfo
 import com.creditjourney.customer.app.configuration.logs.LogParameter
-import com.creditjourney.customer.core.port.input.FindAllCustomersPort
+import com.creditjourney.customer.core.port.FindAllCustomersPort
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import com.creditjourney.customer.core.domain.model.CustomerSlice
 import com.creditjourney.customer.core.port.input.FindAllCustomersInput
