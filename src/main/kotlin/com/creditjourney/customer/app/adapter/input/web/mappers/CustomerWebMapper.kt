@@ -2,7 +2,9 @@ package com.creditjourney.customer.app.adapter.input.web.mappers
 
 import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
+import com.creditjourney.customer.app.adapter.input.web.responses.CustomerSliceResponse
 import com.creditjourney.customer.core.domain.model.Customer
+import com.creditjourney.customer.core.domain.model.CustomerSlice
 import com.creditjourney.customer.core.port.input.CreateCustomerInput
 
 fun CreateCustomerRequest.toInput(): CreateCustomerInput =
@@ -25,4 +27,12 @@ fun Customer.toResponse(): CustomerResponse =
         status = status.name,
         createdAt = createdAt,
         updatedAt = updatedAt
+    )
+
+fun CustomerSlice.toResponse(): CustomerSliceResponse =
+    CustomerSliceResponse(
+        content = content.map { it.toResponse() },
+        page = page,
+        size = size,
+        hasNext = hasNext
     )

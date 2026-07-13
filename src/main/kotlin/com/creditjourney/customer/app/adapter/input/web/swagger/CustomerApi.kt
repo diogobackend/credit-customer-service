@@ -2,6 +2,7 @@ package com.creditjourney.customer.app.adapter.input.web.swagger
 
 import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
+import com.creditjourney.customer.app.adapter.input.web.responses.CustomerSliceResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.ErrorResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
@@ -15,6 +16,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import java.util.UUID
 
 @Tag(
@@ -130,4 +132,50 @@ interface CustomerApi {
         )
         @PathVariable customerId: UUID
     ): ResponseEntity<CustomerResponse>
+
+    @Operation(
+        summary = "Listar clientes",
+        description = "Lista clientes cadastrados usando paginação performática sem count total."
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Clientes listados com sucesso",
+                content = [
+                    Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = Schema(implementation = CustomerSliceResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Parâmetros de paginação inválidos",
+                content = [
+                    Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = Schema(implementation = ErrorResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "Erro inesperado",
+                content = [
+                    Content(
+                        mediaType = MediaType.APPLICATION_JSON_VALUE,
+                        schema = Schema(implementation = ErrorResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
+    fun findAll(
+        @Parameter(description = "Número da página", example = "0")
+        @RequestParam(defaultValue = "0") page: Int,
+
+        @Parameter(description = "Quantidade de registros por página", example = "30")
+        @RequestParam(defaultValue = "30") size: Int
+    ): ResponseEntity<CustomerSliceResponse>
 }
