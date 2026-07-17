@@ -1,10 +1,14 @@
 package com.creditjourney.customer.core.usecase
 
+import com.creditjourney.customer.core.domain.model.Customer
 import com.creditjourney.customer.core.domain.model.CustomerSlice
 import com.creditjourney.customer.core.domain.model.CustomerStatus.INACTIVE
 import com.creditjourney.customer.core.domain.model.CustomerStatus.ACTIVE
 import com.creditjourney.customer.core.port.input.FindAllCustomersInput
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
+import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_DOCUMENT
+import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_EMAIL
+import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_PHONE
 import com.creditjourney.customer.core.usecase.builder.buildCustomer
 import io.mockk.clearMocks
 import io.mockk.every
@@ -17,6 +21,9 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 
 @ExtendWith(MockKExtension::class)
 class FindAllCustomersUseCaseTest(
@@ -47,7 +54,8 @@ class FindAllCustomersUseCaseTest(
             customerRepositoryPort.findAll(
                 page = 0,
                 size = 30,
-                status = null
+                status = null,
+                search = null
             )
         } returns customerSlice
 
@@ -56,7 +64,7 @@ class FindAllCustomersUseCaseTest(
         assertThat(result).isEqualTo(customerSlice)
 
         verify(exactly = 1) {
-            customerRepositoryPort.findAll(page = 0, size = 30, status = null)
+            customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null)
         }
     }
 
@@ -71,7 +79,7 @@ class FindAllCustomersUseCaseTest(
             hasNext = false
         )
 
-        every { customerRepositoryPort.findAll(page = 0, size = 30, status = null) } returns customerSlice
+        every { customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null) } returns customerSlice
 
         val result = findAllCustomersUseCase.findAll(input)
 
@@ -79,7 +87,7 @@ class FindAllCustomersUseCaseTest(
         assertThat(result.hasNext).isFalse()
 
         verify(exactly = 1) {
-            customerRepositoryPort.findAll(page = 0, size = 30, status = null)
+            customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null)
         }
     }
 
@@ -157,7 +165,8 @@ class FindAllCustomersUseCaseTest(
             customerRepositoryPort.findAll(
                 page = 0,
                 size = 30,
-                status = ACTIVE
+                status = ACTIVE,
+                search = null
             )
         } returns customerSlice
 
@@ -170,7 +179,8 @@ class FindAllCustomersUseCaseTest(
             customerRepositoryPort.findAll(
                 page = 0,
                 size = 30,
-                status = ACTIVE
+                status = ACTIVE,
+                search = null
             )
         }
     }
@@ -181,7 +191,8 @@ class FindAllCustomersUseCaseTest(
         val input = FindAllCustomersInput(
             page = 0,
             size = 30,
-            status = INACTIVE
+            status = INACTIVE,
+            search = null
         )
 
         val customerSlice = CustomerSlice(
@@ -195,7 +206,8 @@ class FindAllCustomersUseCaseTest(
             customerRepositoryPort.findAll(
                 page = 0,
                 size = 30,
-                status = INACTIVE
+                status = INACTIVE,
+                search = null
             )
         } returns customerSlice
 
@@ -208,8 +220,73 @@ class FindAllCustomersUseCaseTest(
             customerRepositoryPort.findAll(
                 page = 0,
                 size = 30,
-                status = INACTIVE
+                status = INACTIVE,
+                search = null
             )
         }
+    }
+    @ParameterizedTest
+    @MethodSource("searchFilters")
+    fun `should find customers by search successfully`(
+        search: String,
+        assertion: (Customer) -> Boolean
+    ) {
+
+        val input = FindAllCustomersInput(
+            page = 0,
+            size = 30,
+            status = null,
+            search = search
+        )
+
+        val customerSlice = CustomerSlice(
+            content = listOf(buildCustomer()),
+            page = 0,
+            size = 30,
+            hasNext = false
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = search
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result).isEqualTo(customerSlice)
+        assertThat(result.content).allMatch(assertion)
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = search
+            )
+        }
+    }
+
+    companion object {
+
+        @JvmStatic
+        fun searchFilters(): List<Arguments> =
+            listOf(
+                Arguments.of(
+                    CUSTOMER_DOCUMENT,
+                    { customer: Customer -> customer.document.value == CUSTOMER_DOCUMENT }
+                ),
+                Arguments.of(
+                    CUSTOMER_EMAIL,
+                    { customer: Customer -> customer.email.value == CUSTOMER_EMAIL }
+                ),
+                Arguments.of(
+                    CUSTOMER_PHONE,
+                    { customer: Customer -> customer.phone == CUSTOMER_PHONE }
+                )
+            )
     }
 }

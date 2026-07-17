@@ -18,6 +18,7 @@ open class FindAllCustomersUseCase(
         customerRepositoryPort.findAll(
             page = input.page,
             size = input.size,
-            status = input.status
+            status = input.status,
+            search = input.search
         )
 }

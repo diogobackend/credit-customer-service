@@ -180,7 +180,11 @@ interface CustomerApi {
         @RequestParam(defaultValue = "0") page: Int,
 
         @Parameter(description = "Quantidade de registros por página", example = "30")
-        @RequestParam(defaultValue = "30") size: Int
+        @RequestParam(defaultValue = "30") size: Int,
+
+        @Parameter(description = "Busca por documento, e-mail ou telefone", example = "fer@example.com")
+        @RequestParam(required = false) search: String?
+
     ): ResponseEntity<CustomerSliceResponse>
 
     @Operation(

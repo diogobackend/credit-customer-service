@@ -49,13 +49,15 @@ class CustomerController(
     override fun findAll(
         @RequestParam(required = false) status: CustomerStatus?,
         @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "30") size: Int
+        @RequestParam(defaultValue = "30") size: Int,
+        @RequestParam(required = false) search: String?
     ): ResponseEntity<CustomerSliceResponse> {
         val result = findAllCustomersPort.findAll(
             FindAllCustomersInput(
                 page = page,
                 size = size,
-                status = status
+                status = status,
+                search = search
             )
         )
 

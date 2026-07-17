@@ -14,5 +14,5 @@ interface CustomerRepositoryPort {
     fun existsByPhone(phone: String): Boolean
     fun save(customer: Customer): Customer
     fun findById(customerId: UUID): Customer?
-    fun findAll(page: Int, size: Int, status: CustomerStatus?): CustomerSlice
+    fun findAll(page: Int, size: Int, status: CustomerStatus?, search: String?): CustomerSlice
 }

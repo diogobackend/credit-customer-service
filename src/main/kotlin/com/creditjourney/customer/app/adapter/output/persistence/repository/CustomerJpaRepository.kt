@@ -18,11 +18,18 @@ interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
         """
     SELECT c FROM CustomerEntity c
     WHERE (:status IS NULL OR c.status = :status)
+      AND (
+          :search IS NULL
+          OR c.document = :search
+          OR c.email = :search
+          OR c.phone = :search
+      )
     ORDER BY c.createdAt DESC, c.customerId DESC
     """
     )
     fun findAllCustomers(
         @Param("status") status: String?,
+        @Param("search") search: String?,
         pageable: Pageable
     ): Slice<CustomerEntity>
 

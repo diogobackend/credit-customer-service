@@ -5,7 +5,8 @@ import com.creditjourney.customer.core.domain.model.CustomerStatus
 data class FindAllCustomersInput(
     val page: Int = 0,
     val size: Int = 30,
-    val status: CustomerStatus? = null
+    val status: CustomerStatus? = null,
+    val search: String? = null
 ) {
     init {
         require(page >= 0) { "Page must not be negative" }
