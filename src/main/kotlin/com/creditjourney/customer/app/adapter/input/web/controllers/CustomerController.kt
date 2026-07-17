@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import java.math.BigDecimal
 import java.util.UUID
 
 @RestController
@@ -51,7 +52,9 @@ class CustomerController(
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "30") size: Int,
         @RequestParam(required = false) search: String?,
-        @RequestParam(required = false) name: String?
+        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) minIncome: BigDecimal?,
+        @RequestParam(required = false) maxIncome: BigDecimal?
     ): ResponseEntity<CustomerSliceResponse> {
         val result = findAllCustomersPort.findAll(
             FindAllCustomersInput(
@@ -59,7 +62,9 @@ class CustomerController(
                 size = size,
                 status = status,
                 search = search,
-                name = name
+                name = name,
+                minIncome = minIncome,
+                maxIncome = maxIncome
             )
         )
 

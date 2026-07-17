@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
+import java.math.BigDecimal
 import java.util.UUID
 
 @Tag(
@@ -186,7 +187,13 @@ interface CustomerApi {
         @RequestParam(required = false) search: String?,
 
         @Parameter(description = "Busca parcial por nome", example = "Ma")
-        @RequestParam(required = false) name: String?
+        @RequestParam(required = false) name: String?,
+
+        @Parameter(description = "Renda mínima", example = "500")
+        @RequestParam(required = false) minIncome: BigDecimal?,
+
+        @Parameter(description = "Renda máxima", example = "1000")
+        @RequestParam(required = false) maxIncome: BigDecimal?
 
     ): ResponseEntity<CustomerSliceResponse>
 

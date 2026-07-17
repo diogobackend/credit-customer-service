@@ -5,6 +5,7 @@ import com.creditjourney.customer.core.domain.model.CustomerSlice
 import com.creditjourney.customer.core.domain.model.CustomerStatus
 import com.creditjourney.customer.core.domain.valueobject.Document
 import com.creditjourney.customer.core.domain.valueobject.Email
+import java.math.BigDecimal
 import java.util.UUID
 
 interface CustomerRepositoryPort {
@@ -19,6 +20,8 @@ interface CustomerRepositoryPort {
             size: Int,
             status: CustomerStatus?,
             search: String?,
-            name: String?
+            name: String?,
+            minIncome: BigDecimal?,
+            maxIncome: BigDecimal?
         ): CustomerSlice
 }

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Slice
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
+import java.math.BigDecimal
 import java.util.UUID
 
 interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
@@ -28,6 +29,8 @@ interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
           :name IS NULL
           OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))
       )
+      AND (:minIncome IS NULL OR c.income >= :minIncome)
+      AND (:maxIncome IS NULL OR c.income <= :maxIncome)
     ORDER BY c.createdAt DESC, c.customerId DESC
     """
     )
@@ -35,6 +38,8 @@ interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
         @Param("status") status: String?,
         @Param("search") search: String?,
         @Param("name") name: String?,
+        @Param("minIncome") minIncome: BigDecimal?,
+        @Param("maxIncome") maxIncome: BigDecimal?,
         pageable: Pageable
     ): Slice<CustomerEntity>
 

@@ -20,6 +20,8 @@ open class FindAllCustomersUseCase(
             size = input.size,
             status = input.status,
             search = input.search,
-            name = input.name?.trim()?.takeIf { it.isNotBlank() }
+            name = input.name?.trim()?.takeIf { it.isNotBlank() },
+            minIncome = input.minIncome,
+            maxIncome = input.maxIncome
         )
 }

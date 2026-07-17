@@ -11,6 +11,7 @@ import com.creditjourney.customer.core.domain.valueobject.Email
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Component
+import java.math.BigDecimal
 import java.util.UUID
 
 @Component
@@ -40,7 +41,9 @@ class CustomerPersistenceAdapter(
         size: Int,
         status: CustomerStatus?,
         search: String?,
-        name: String?
+        name: String?,
+        minIncome: BigDecimal?,
+        maxIncome: BigDecimal?
     ): CustomerSlice {
         val pageable = PageRequest.of(page, size)
 
@@ -48,7 +51,9 @@ class CustomerPersistenceAdapter(
             status = status?.name,
             search = search,
             name = name,
-            pageable = pageable
+            minIncome = minIncome,
+            maxIncome = maxIncome,
+            pageable = pageable,
         )
 
         return CustomerSlice(

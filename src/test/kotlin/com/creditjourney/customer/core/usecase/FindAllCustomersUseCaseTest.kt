@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import java.math.BigDecimal
 
 @ExtendWith(MockKExtension::class)
 class FindAllCustomersUseCaseTest(
@@ -51,7 +52,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = null,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         } returns customerSlice
 
@@ -60,7 +63,15 @@ class FindAllCustomersUseCaseTest(
         assertThat(result).isEqualTo(customerSlice)
 
         verify(exactly = 1) {
-            customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null, name = null)
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = null,
+                maxIncome = null
+            )
         }
     }
 
@@ -72,7 +83,15 @@ class FindAllCustomersUseCaseTest(
             content = emptyList()
         )
 
-        every { customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null, name = null) } returns customerSlice
+        every { customerRepositoryPort.findAll(
+            page = 0,
+            size = 30,
+            status = null,
+            search = null,
+            name = null,
+            minIncome = null,
+            maxIncome = null
+        ) } returns customerSlice
 
         val result = findAllCustomersUseCase.findAll(input)
 
@@ -80,7 +99,15 @@ class FindAllCustomersUseCaseTest(
         assertThat(result.hasNext).isFalse()
 
         verify(exactly = 1) {
-            customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null, name = null)
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = null,
+                maxIncome = null
+            )
         }
     }
 
@@ -151,7 +178,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = ACTIVE,
                 search = null,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         } returns customerSlice
 
@@ -166,7 +195,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = ACTIVE,
                 search = null,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         }
     }
@@ -188,7 +219,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = INACTIVE,
                 search = null,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         } returns customerSlice
 
@@ -203,7 +236,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = INACTIVE,
                 search = null,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         }
     }
@@ -225,7 +260,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = null,
-                name = "Ma"
+                name = "Ma",
+                minIncome = null,
+                maxIncome = null
             )
         } returns customerSlice
 
@@ -239,7 +276,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = null,
-                name = "Ma"
+                name = "Ma",
+                minIncome = null,
+                maxIncome = null
             )
         }
     }
@@ -267,7 +306,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = null,
-                name = name
+                name = name,
+                minIncome = null,
+                maxIncome = null
             )
         } returns customerSlice
 
@@ -282,7 +323,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = null,
-                name = name
+                name = name,
+                minIncome = null,
+                maxIncome = null
             )
         }
     }
@@ -302,7 +345,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = null,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         } returns customerSlice
 
@@ -316,7 +361,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = null,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         }
     }
@@ -338,7 +385,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = null,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         } returns customerSlice
 
@@ -352,9 +401,170 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = null,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         }
+    }
+
+    @Test
+    fun `should find customers with min income successfully`() {
+
+        val input = buildFindAllCustomersInput(
+            minIncome = BigDecimal("500.00")
+        )
+
+        val customerSlice = buildCustomerSlice(
+            content = listOf(buildCustomer(income = BigDecimal("1000.00")))
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = BigDecimal("500.00"),
+                maxIncome = null
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result).isEqualTo(customerSlice)
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = BigDecimal("500.00"),
+                maxIncome = null
+            )
+        }
+    }
+
+    @Test
+    fun `should find customers with max income successfully`() {
+
+        val input = buildFindAllCustomersInput(
+            maxIncome = BigDecimal("100.00")
+        )
+
+        val customerSlice = buildCustomerSlice(
+            content = listOf(buildCustomer(income = BigDecimal("50.00")))
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = null,
+                maxIncome = BigDecimal("100.00")
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result).isEqualTo(customerSlice)
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = null,
+                maxIncome = BigDecimal("100.00")
+            )
+        }
+    }
+
+    @Test
+    fun `should find customers with min and max income successfully`() {
+
+        val input = buildFindAllCustomersInput(
+            minIncome = BigDecimal("100.00"),
+            maxIncome = BigDecimal("500.00")
+        )
+
+        val customerSlice = buildCustomerSlice(
+            content = listOf(buildCustomer(income = BigDecimal("300.00")))
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = BigDecimal("100.00"),
+                maxIncome = BigDecimal("500.00")
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result).isEqualTo(customerSlice)
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = BigDecimal("100.00"),
+                maxIncome = BigDecimal("500.00")
+            )
+        }
+    }
+
+    @Test
+    fun `should throw exception when min income is negative`() {
+
+        val exception = assertThrows<IllegalArgumentException> {
+            buildFindAllCustomersInput(
+                minIncome = BigDecimal("-1.00")
+            )
+        }
+
+        assertThat(exception.message).isEqualTo("Min income must not be negative")
+    }
+
+    @Test
+    fun `should throw exception when max income is negative`() {
+
+        val exception = assertThrows<IllegalArgumentException> {
+            buildFindAllCustomersInput(
+                maxIncome = BigDecimal("-1.00")
+            )
+        }
+
+        assertThat(exception.message).isEqualTo("Max income must not be negative")
+    }
+
+    @Test
+    fun `should throw exception when min income is greater than max income`() {
+
+        val exception = assertThrows<IllegalArgumentException> {
+            buildFindAllCustomersInput(
+                minIncome = BigDecimal("500.00"),
+                maxIncome = BigDecimal("100.00")
+            )
+        }
+
+        assertThat(exception.message)
+            .isEqualTo("Min income must be less than or equal to max income")
     }
 
 
@@ -382,7 +592,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = search,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         } returns customerSlice
 
@@ -397,7 +609,9 @@ class FindAllCustomersUseCaseTest(
                 size = 30,
                 status = null,
                 search = search,
-                name = null
+                name = null,
+                minIncome = null,
+                maxIncome = null
             )
         }
     }
