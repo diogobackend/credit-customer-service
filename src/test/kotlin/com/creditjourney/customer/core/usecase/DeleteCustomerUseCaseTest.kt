@@ -2,10 +2,15 @@ package com.creditjourney.customer.core.usecase
 
 import com.creditjourney.customer.core.domain.exception.CustomerNotFoundException
 import com.creditjourney.customer.core.domain.model.CustomerStatus.INACTIVE
+import com.creditjourney.customer.core.domain.model.CustomerStatus.BLOCKED
+import com.creditjourney.customer.core.domain.model.CustomerStatus.ACTIVE
 import com.creditjourney.customer.core.port.FindCustomerByIdPort
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
-import com.creditjourney.customer.core.usecase.builder.CustomerBuilderConstants.CUSTOMER_ID
-import com.creditjourney.customer.core.usecase.builder.buildCustomer
+import com.creditjourney.customer.core.builder.buildCustomer
+import com.creditjourney.customer.core.builder.buildDeleteCustomerInput
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_ID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NOT_FOUND_WITH_CUSTOMER_ID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.DELETE_STATUS_MUST_BE_INACTIVE_OR_BLOCKED
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -44,7 +49,9 @@ class DeleteCustomerUseCaseTest(
         every { findCustomerByIdPort.findById(CUSTOMER_ID) } returns customer
         every { customerRepositoryPort.save(any()) } answers { firstArg() }
 
-        deleteCustomerUseCase.delete(CUSTOMER_ID)
+        deleteCustomerUseCase.delete(
+            buildDeleteCustomerInput()
+        )
 
         verifyOrder {
             findCustomerByIdPort.findById(CUSTOMER_ID)
@@ -61,24 +68,18 @@ class DeleteCustomerUseCaseTest(
     @Test
     fun `should throw exception when customer is not found`() {
 
-        every {
-            findCustomerByIdPort.findById(CUSTOMER_ID)
-        } throws CustomerNotFoundException(CUSTOMER_ID)
+        val input = buildDeleteCustomerInput()
+
+        every { findCustomerByIdPort.findById(CUSTOMER_ID) } throws CustomerNotFoundException(CUSTOMER_ID)
 
         val exception = assertThrows<CustomerNotFoundException> {
-            deleteCustomerUseCase.delete(CUSTOMER_ID)
+            deleteCustomerUseCase.delete(input)
         }
 
-        assertThat(exception.message)
-            .isEqualTo("Customer not found with customerId: $CUSTOMER_ID")
+        assertThat(exception.message).isEqualTo("$CUSTOMER_NOT_FOUND_WITH_CUSTOMER_ID: $CUSTOMER_ID")
 
-        verify(exactly = 1) {
-            findCustomerByIdPort.findById(CUSTOMER_ID)
-        }
-
-        verify(exactly = 0) {
-            customerRepositoryPort.save(any())
-        }
+        verify(exactly = 1) { findCustomerByIdPort.findById(CUSTOMER_ID) }
+        verify(exactly = 0) { customerRepositoryPort.save(any()) }
     }
 
     @Test
@@ -89,7 +90,7 @@ class DeleteCustomerUseCaseTest(
         every { findCustomerByIdPort.findById(CUSTOMER_ID) } returns customer
         every { customerRepositoryPort.save(any()) } answers { firstArg() }
 
-        deleteCustomerUseCase.delete(CUSTOMER_ID)
+        deleteCustomerUseCase.delete(buildDeleteCustomerInput())
 
         verify(exactly = 1) {
             customerRepositoryPort.save(
@@ -100,5 +101,66 @@ class DeleteCustomerUseCaseTest(
                 }
             )
         }
+    }
+
+    @Test
+    fun `should delete customer as inactive successfully`() {
+
+        val input = buildDeleteCustomerInput()
+        val customer = buildCustomer()
+
+        every { findCustomerByIdPort.findById(CUSTOMER_ID) } returns customer
+        every { customerRepositoryPort.save(any()) } answers { firstArg() }
+
+        deleteCustomerUseCase.delete(input)
+
+        verify(exactly = 1) { findCustomerByIdPort.findById(CUSTOMER_ID) }
+        verify(exactly = 1) {
+            customerRepositoryPort.save(
+                match {
+                    it.customerId == CUSTOMER_ID &&
+                            it.status == INACTIVE &&
+                            it.updatedAt != null
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `should delete customer as blocked successfully`() {
+
+        val input = buildDeleteCustomerInput(
+            status = BLOCKED
+        )
+
+        val customer = buildCustomer()
+
+        every { findCustomerByIdPort.findById(CUSTOMER_ID) } returns customer
+        every { customerRepositoryPort.save(any()) } answers { firstArg() }
+
+        deleteCustomerUseCase.delete(input)
+
+        verify(exactly = 1) { findCustomerByIdPort.findById(CUSTOMER_ID) }
+        verify(exactly = 1) {
+            customerRepositoryPort.save(
+                match {
+                    it.customerId == CUSTOMER_ID &&
+                            it.status == BLOCKED &&
+                            it.updatedAt != null
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `should throw exception when delete status is active`() {
+
+        val exception = assertThrows<IllegalArgumentException> {
+            buildDeleteCustomerInput(
+                status = ACTIVE
+            )
+        }
+
+        assertThat(exception.message).isEqualTo(DELETE_STATUS_MUST_BE_INACTIVE_OR_BLOCKED)
     }
 }

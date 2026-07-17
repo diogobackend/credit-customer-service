@@ -1,4 +1,4 @@
-package com.creditjourney.customer.core.usecase.builder
+package com.creditjourney.customer.core.builder
 
 import com.creditjourney.customer.core.domain.model.CustomerStatus
 import com.creditjourney.customer.core.port.input.FindAllCustomersInput

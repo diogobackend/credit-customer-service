@@ -1,5 +1,7 @@
 package com.creditjourney.customer.core.port.input
 
+import com.creditjourney.customer.core.common.messages.CustomerMessages.AT_LEAST_ONE_FIELD_MUST_BE_INFORMED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.PHONE_MUST_NOT_BE_BLANK
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -17,11 +19,11 @@ data class UpdateCustomerInput(
                     phone != null ||
                     income != null
         ) {
-            "At least one field must be informed"
+            AT_LEAST_ONE_FIELD_MUST_BE_INFORMED
         }
 
         require(phone == null || phone.isNotBlank()) {
-            "Phone must not be blank"
+            PHONE_MUST_NOT_BE_BLANK
         }
     }
 }

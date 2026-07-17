@@ -5,12 +5,17 @@ import com.creditjourney.customer.core.domain.model.CustomerStatus.INACTIVE
 import com.creditjourney.customer.core.domain.model.CustomerStatus.ACTIVE
 import com.creditjourney.customer.core.port.input.FindAllCustomersInput
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
-import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_DOCUMENT
-import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_EMAIL
-import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_PHONE
-import com.creditjourney.customer.core.usecase.builder.buildCustomer
-import com.creditjourney.customer.core.usecase.builder.buildCustomerSlice
-import com.creditjourney.customer.core.usecase.builder.buildFindAllCustomersInput
+import com.creditjourney.customer.core.builder.buildCustomer
+import com.creditjourney.customer.core.builder.buildCustomerSlice
+import com.creditjourney.customer.core.builder.buildFindAllCustomersInput
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_DOCUMENT
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_EMAIL
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_PHONE
+import com.creditjourney.customer.core.common.messages.CustomerMessages.MAX_INCOME_MUST_NOT_BE_NEGATIVE
+import com.creditjourney.customer.core.common.messages.CustomerMessages.MIN_INCOME_MUST_BE_LESS_THAN_OR_EQUAL_TO_MAX_INCOME
+import com.creditjourney.customer.core.common.messages.CustomerMessages.MIN_INCOME_MUST_NOT_BE_NEGATIVE
+import com.creditjourney.customer.core.common.messages.CustomerMessages.PAGE_MUST_NOT_BE_NEGATIVE
+import com.creditjourney.customer.core.common.messages.CustomerMessages.SIZE_MUST_BE_BETWEEN_ONE_AND_ONE_HUNDRED
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -119,7 +124,7 @@ class FindAllCustomersUseCaseTest(
             buildFindAllCustomersInput(page = -1)
         }
 
-        assertThat(exception.message).isEqualTo("Page must not be negative")
+        assertThat(exception.message).isEqualTo(PAGE_MUST_NOT_BE_NEGATIVE)
     }
 
     @Test
@@ -129,7 +134,7 @@ class FindAllCustomersUseCaseTest(
             buildFindAllCustomersInput(size = 0)
         }
 
-        assertThat(exception.message).isEqualTo("Size must be between 1 and 100")
+        assertThat(exception.message).isEqualTo(SIZE_MUST_BE_BETWEEN_ONE_AND_ONE_HUNDRED)
     }
 
     @Test
@@ -139,7 +144,7 @@ class FindAllCustomersUseCaseTest(
             buildFindAllCustomersInput(size = 101)
         }
 
-        assertThat(exception.message).isEqualTo("Size must be between 1 and 100")
+        assertThat(exception.message).isEqualTo(SIZE_MUST_BE_BETWEEN_ONE_AND_ONE_HUNDRED)
     }
 
     @Test
@@ -547,7 +552,7 @@ class FindAllCustomersUseCaseTest(
             )
         }
 
-        assertThat(exception.message).isEqualTo("Min income must not be negative")
+        assertThat(exception.message).isEqualTo(MIN_INCOME_MUST_NOT_BE_NEGATIVE)
     }
 
     @Test
@@ -559,7 +564,7 @@ class FindAllCustomersUseCaseTest(
             )
         }
 
-        assertThat(exception.message).isEqualTo("Max income must not be negative")
+        assertThat(exception.message).isEqualTo(MAX_INCOME_MUST_NOT_BE_NEGATIVE)
     }
 
     @Test
@@ -573,7 +578,7 @@ class FindAllCustomersUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Min income must be less than or equal to max income")
+            .isEqualTo(MIN_INCOME_MUST_BE_LESS_THAN_OR_EQUAL_TO_MAX_INCOME)
     }
 
     @Test

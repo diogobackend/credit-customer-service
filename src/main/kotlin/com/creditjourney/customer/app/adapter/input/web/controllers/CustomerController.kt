@@ -14,6 +14,7 @@ import com.creditjourney.customer.core.port.input.FindAllCustomersInput
 import com.creditjourney.customer.core.port.FindAllCustomersPort
 import com.creditjourney.customer.core.port.FindCustomerByIdPort
 import com.creditjourney.customer.core.port.UpdateCustomerPort
+import com.creditjourney.customer.core.port.input.DeleteCustomerInput
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -86,9 +87,15 @@ class CustomerController(
 
     @DeleteMapping("/{customerId}")
     override fun delete(
-        @PathVariable customerId: UUID
+        @PathVariable customerId: UUID,
+        @RequestParam(defaultValue = "INACTIVE") status: CustomerStatus
     ): ResponseEntity<Void> {
-        deleteCustomerPort.delete(customerId)
+        deleteCustomerPort.delete(
+            DeleteCustomerInput(
+                customerId = customerId,
+                status = status
+            )
+        )
 
         return ResponseEntity.noContent().build()
     }

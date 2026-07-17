@@ -1,15 +1,18 @@
 package com.creditjourney.customer.core.domain.valueobject
 
+import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MUST_BE_VALID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MUST_NOT_BE_BLANK
+
 data class Email(
     val value: String
 ) {
     init {
         require(value.isNotBlank()) {
-            "Email must not be blank"
+            EMAIL_MUST_NOT_BE_BLANK
         }
 
         require(EMAIL_REGEX.matches(value)) {
-            "Email must be valid"
+            EMAIL_MUST_BE_VALID
         }
     }
 

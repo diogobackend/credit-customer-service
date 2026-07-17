@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
@@ -200,53 +201,23 @@ interface CustomerApi {
     ): ResponseEntity<CustomerSliceResponse>
 
     @Operation(
-        summary = "Deletar cliente",
-        description = "Inativa um cliente pelo customerId."
+        summary = "Desabilitar cliente",
+        description = "Altera o status do cliente para INACTIVE ou BLOCKED"
     )
     @ApiResponses(
         value = [
-            ApiResponse(
-                responseCode = "204",
-                description = "Cliente deletado com sucesso"
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "customerId inválido",
-                content = [
-                    Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Cliente não encontrado",
-                content = [
-                    Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
-            ),
-            ApiResponse(
-                responseCode = "500",
-                description = "Erro inesperado",
-                content = [
-                    Content(
-                        mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
-            )
+            ApiResponse(responseCode = "204", description = "Status alterado com sucesso"),
+            ApiResponse(responseCode = "400", description = "Status inválido"),
+            ApiResponse(responseCode = "404", description = "Cliente não encontrado")
         ]
     )
+    @DeleteMapping("/{customerId}")
     fun delete(
-        @Parameter(
-            description = "Identificador único do cliente",
-            example = "11111111-1111-1111-1111-111111111111"
-        )
-        @PathVariable customerId: UUID
+        @Parameter(description = "ID do cliente", example = "11111111-1111-1111-1111-111111111111")
+        @PathVariable customerId: UUID,
+
+        @Parameter(description = "Novo status do cliente", example = "INACTIVE")
+        @RequestParam(defaultValue = "INACTIVE") status: CustomerStatus
     ): ResponseEntity<Void>
 
     @Operation(

@@ -1,19 +1,23 @@
 package com.creditjourney.customer.core.domain.valueobject
 
+import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_CONTAIN_ONLY_DIGITS
+import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_HAVE_ELEVEN_DIGITS
+import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_NOT_BE_BLANK
+
 data class Document(
     val value: String
 ) {
     init {
         require(value.isNotBlank()) {
-            "Document must not be blank"
+            DOCUMENT_MUST_NOT_BE_BLANK
         }
 
         require(value.all { it.isDigit() }) {
-            "Document must contain only digits"
+            DOCUMENT_MUST_CONTAIN_ONLY_DIGITS
         }
 
         require(value.length == 11) {
-            "Document must have 11 digits"
+            DOCUMENT_MUST_HAVE_ELEVEN_DIGITS
         }
     }
 }

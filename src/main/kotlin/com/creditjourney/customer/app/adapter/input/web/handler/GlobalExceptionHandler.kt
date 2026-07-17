@@ -1,6 +1,11 @@
 package com.creditjourney.customer.app.adapter.input.web.handler
 
 import com.creditjourney.customer.app.adapter.input.web.responses.ErrorResponse
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_ALREADY_EXISTS
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NOT_FOUND
+import com.creditjourney.customer.core.common.messages.CustomerMessages.INVALID_REQUEST
+import com.creditjourney.customer.core.common.messages.CustomerMessages.INVALID_REQUEST_BODY
+import com.creditjourney.customer.core.common.messages.CustomerMessages.UNEXPECTED_ERROR
 import com.creditjourney.customer.core.domain.exception.CustomerAlreadyExistsException
 import com.creditjourney.customer.core.domain.exception.CustomerNotFoundException
 import org.springframework.dao.DataIntegrityViolationException
@@ -13,14 +18,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
-
-    private companion object {
-        const val CUSTOMER_ALREADY_EXISTS = "Customer already exists"
-        const val INVALID_REQUEST = "Invalid request"
-        const val INVALID_REQUEST_BODY = "Invalid request body"
-        const val UNEXPECTED_ERROR = "Unexpected error"
-        const val CUSTOMER_NOT_FOUND = "Customer not found"
-    }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationException(

@@ -4,7 +4,8 @@ import com.creditjourney.customer.core.domain.exception.CustomerAlreadyExistsExc
 import com.creditjourney.customer.core.domain.model.Customer
 import com.creditjourney.customer.core.domain.model.CustomerStatus
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
-import com.creditjourney.customer.core.usecase.builder.buildCreateCustomerInput
+import com.creditjourney.customer.core.builder.buildCreateCustomerInput
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_ALREADY_EXISTS_WITH
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -19,11 +20,18 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
-import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_DOCUMENT
-import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_EMAIL
-import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_INCOME
-import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_NAME
-import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_PHONE
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_DOCUMENT
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_EMAIL
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_INCOME
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NAME
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NAME_MUST_NOT_BE_BLANK
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_PHONE
+import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_CONTAIN_ONLY_DIGITS
+import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_HAVE_ELEVEN_DIGITS
+import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_NOT_BE_BLANK
+import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MUST_BE_VALID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MUST_NOT_BE_BLANK
+import com.creditjourney.customer.core.common.messages.CustomerMessages.INCOME_MUST_NOT_BE_NEGATIVE
 
 @ExtendWith(MockKExtension::class)
 class CreateCustomerUseCaseTest(
@@ -63,7 +71,7 @@ class CreateCustomerUseCaseTest(
                             it.document.value == CUSTOMER_DOCUMENT &&
                             it.email.value == CUSTOMER_EMAIL &&
                             it.phone == CUSTOMER_PHONE &&
-                            it.income.value.compareTo(CUSTOMER_INCOME) == 0
+                            it.income.value.compareTo(CUSTOMER_INCOME) == 0 &&
                             it.status == CustomerStatus.ACTIVE
                 }
             )
@@ -130,7 +138,7 @@ class CreateCustomerUseCaseTest(
 
 
         assertThat(exception.message)
-            .isEqualTo("Customer already exists with document: $CUSTOMER_DOCUMENT")
+            .isEqualTo("$CUSTOMER_ALREADY_EXISTS_WITH document: $CUSTOMER_DOCUMENT")
 
         verify(exactly = 1) {
             customerRepositoryPort.existsByDocument(match { it.value == CUSTOMER_DOCUMENT })
@@ -157,7 +165,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Customer already exists with email: $CUSTOMER_EMAIL")
+            .isEqualTo("$CUSTOMER_ALREADY_EXISTS_WITH email: $CUSTOMER_EMAIL")
 
         verifyOrder {
             customerRepositoryPort.existsByDocument(match { it.value == CUSTOMER_DOCUMENT })
@@ -184,7 +192,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Customer already exists with phone: $CUSTOMER_PHONE")
+            .isEqualTo("$CUSTOMER_ALREADY_EXISTS_WITH phone: $CUSTOMER_PHONE")
 
         verifyOrder {
             customerRepositoryPort.existsByDocument(match { it.value == CUSTOMER_DOCUMENT })
@@ -207,7 +215,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Document must not be blank")
+            .isEqualTo(DOCUMENT_MUST_NOT_BE_BLANK)
 
         verifyCustomerRepositoryWasNotCalled()
     }
@@ -222,7 +230,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Document must contain only digits")
+            .isEqualTo(DOCUMENT_MUST_CONTAIN_ONLY_DIGITS)
 
         verifyCustomerRepositoryWasNotCalled()
     }
@@ -237,7 +245,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Document must have 11 digits")
+            .isEqualTo(DOCUMENT_MUST_HAVE_ELEVEN_DIGITS)
 
         verifyCustomerRepositoryWasNotCalled()
     }
@@ -252,7 +260,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Email must not be blank")
+            .isEqualTo(EMAIL_MUST_NOT_BE_BLANK)
 
         verifyCustomerRepositoryWasNotCalled()
     }
@@ -267,7 +275,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Email must be valid")
+            .isEqualTo(EMAIL_MUST_BE_VALID)
 
         verifyCustomerRepositoryWasNotCalled()
     }
@@ -282,7 +290,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Income must not be negative")
+            .isEqualTo(INCOME_MUST_NOT_BE_NEGATIVE)
 
         verify(exactly = 1) {
             customerRepositoryPort.existsByDocument(match { it.value == CUSTOMER_DOCUMENT })
@@ -305,7 +313,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Customer name must not be blank")
+            .isEqualTo(CUSTOMER_NAME_MUST_NOT_BE_BLANK)
 
         verify(exactly = 1) {
             customerRepositoryPort.existsByDocument(match { it.value == CUSTOMER_DOCUMENT })
@@ -346,7 +354,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Document must have 11 digits")
+            .isEqualTo(DOCUMENT_MUST_HAVE_ELEVEN_DIGITS)
 
         verifyCustomerRepositoryWasNotCalled()
     }
@@ -361,7 +369,7 @@ class CreateCustomerUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Customer name must not be blank")
+            .isEqualTo(CUSTOMER_NAME_MUST_NOT_BE_BLANK)
 
         verify(exactly = 1) {
             customerRepositoryPort.existsByDocument(match { it.value == CUSTOMER_DOCUMENT })

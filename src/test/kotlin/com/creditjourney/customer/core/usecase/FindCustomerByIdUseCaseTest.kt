@@ -2,8 +2,9 @@ package com.creditjourney.customer.core.usecase
 
 import com.creditjourney.customer.core.domain.exception.CustomerNotFoundException
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
-import com.creditjourney.customer.core.usecase.builder.CustomerBuilderConstants.CUSTOMER_ID
-import com.creditjourney.customer.core.usecase.builder.buildCustomer
+import com.creditjourney.customer.core.builder.buildCustomer
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_ID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NOT_FOUND_WITH_CUSTOMER_ID
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -56,7 +57,7 @@ class FindCustomerByIdUseCaseTest(
         }
 
         assertThat(exception.message)
-            .isEqualTo("Customer not found with customerId: $CUSTOMER_ID")
+            .isEqualTo("$CUSTOMER_NOT_FOUND_WITH_CUSTOMER_ID: $CUSTOMER_ID")
 
         verify(exactly = 1) {
             customerRepositoryPort.findById(CUSTOMER_ID)

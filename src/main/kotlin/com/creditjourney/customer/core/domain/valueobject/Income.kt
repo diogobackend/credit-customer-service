@@ -1,5 +1,6 @@
 package com.creditjourney.customer.core.domain.valueobject
 
+import com.creditjourney.customer.core.common.messages.CustomerMessages.INCOME_MUST_NOT_BE_NEGATIVE
 import java.math.BigDecimal
 
 data class Income(
@@ -7,7 +8,7 @@ data class Income(
 ) {
     init {
         require(value >= BigDecimal.ZERO) {
-            "Income must not be negative"
+            INCOME_MUST_NOT_BE_NEGATIVE
         }
     }
 }

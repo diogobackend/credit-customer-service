@@ -1,5 +1,6 @@
 package com.creditjourney.customer.core.domain.model
 
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NAME_MUST_NOT_BE_BLANK
 import com.creditjourney.customer.core.domain.valueobject.Document
 import com.creditjourney.customer.core.domain.valueobject.Email
 import com.creditjourney.customer.core.domain.valueobject.Income
@@ -19,7 +20,7 @@ data class Customer(
 ) {
     init {
         require(name.isNotBlank()) {
-            "Customer name must not be blank"
+            CUSTOMER_NAME_MUST_NOT_BE_BLANK
         }
     }
 
@@ -44,11 +45,12 @@ data class Customer(
         }
     }
 
-    fun inactivate(): Customer =
+    fun changeStatus(status: CustomerStatus): Customer =
         copy(
-            status = CustomerStatus.INACTIVE,
+            status = status,
             updatedAt = LocalDateTime.now()
         )
+
     fun update(
         name: String?,
         email: Email?,

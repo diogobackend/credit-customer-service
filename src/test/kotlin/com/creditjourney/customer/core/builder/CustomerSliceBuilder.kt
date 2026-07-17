@@ -1,4 +1,4 @@
-package com.creditjourney.customer.core.usecase.builder
+package com.creditjourney.customer.core.builder
 
 import com.creditjourney.customer.core.domain.model.Customer
 import com.creditjourney.customer.core.domain.model.CustomerSlice

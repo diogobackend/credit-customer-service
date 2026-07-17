@@ -1,11 +1,16 @@
-package com.creditjourney.customer.core.usecase
+package com.creditjourney.customer.core.port.input
 
-import com.creditjourney.customer.core.port.input.UpdateCustomerInput
-import com.creditjourney.customer.core.usecase.builder.CustomerBuilderConstants.CUSTOMER_ID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_ID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.AT_LEAST_ONE_FIELD_MUST_BE_INFORMED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.BLANK_PHONE
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_EMAIL_UPDATED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_INCOME_UPDATED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NAME_UPDATED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_PHONE_UPDATED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.PHONE_MUST_NOT_BE_BLANK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.math.BigDecimal
 
 class UpdateCustomerInputTest {
 
@@ -14,11 +19,11 @@ class UpdateCustomerInputTest {
 
         val input = UpdateCustomerInput(
             customerId = CUSTOMER_ID,
-            name = UPDATED_NAME
+            name = CUSTOMER_NAME_UPDATED
         )
 
         assertThat(input.customerId).isEqualTo(CUSTOMER_ID)
-        assertThat(input.name).isEqualTo(UPDATED_NAME)
+        assertThat(input.name).isEqualTo(CUSTOMER_NAME_UPDATED)
         assertThat(input.email).isNull()
         assertThat(input.phone).isNull()
         assertThat(input.income).isNull()
@@ -29,10 +34,10 @@ class UpdateCustomerInputTest {
 
         val input = UpdateCustomerInput(
             customerId = CUSTOMER_ID,
-            email = UPDATED_EMAIL
+            email = CUSTOMER_EMAIL_UPDATED
         )
 
-        assertThat(input.email).isEqualTo(UPDATED_EMAIL)
+        assertThat(input.email).isEqualTo(CUSTOMER_EMAIL_UPDATED)
     }
 
     @Test
@@ -40,10 +45,10 @@ class UpdateCustomerInputTest {
 
         val input = UpdateCustomerInput(
             customerId = CUSTOMER_ID,
-            phone = UPDATED_PHONE
+            phone = CUSTOMER_PHONE_UPDATED
         )
 
-        assertThat(input.phone).isEqualTo(UPDATED_PHONE)
+        assertThat(input.phone).isEqualTo(CUSTOMER_PHONE_UPDATED)
     }
 
     @Test
@@ -51,10 +56,10 @@ class UpdateCustomerInputTest {
 
         val input = UpdateCustomerInput(
             customerId = CUSTOMER_ID,
-            income = UPDATED_INCOME
+            income = CUSTOMER_INCOME_UPDATED
         )
 
-        assertThat(input.income).isEqualByComparingTo(UPDATED_INCOME)
+        assertThat(input.income).isEqualByComparingTo(CUSTOMER_INCOME_UPDATED)
     }
 
     @Test
@@ -66,7 +71,7 @@ class UpdateCustomerInputTest {
             )
         }
 
-        assertThat(exception.message).isEqualTo(AT_LEAST_ONE_FIELD_ERROR)
+        assertThat(exception.message).isEqualTo(AT_LEAST_ONE_FIELD_MUST_BE_INFORMED)
     }
 
     @Test
@@ -79,17 +84,6 @@ class UpdateCustomerInputTest {
             )
         }
 
-        assertThat(exception.message).isEqualTo(PHONE_BLANK_ERROR)
-    }
-
-    companion object {
-        const val UPDATED_NAME = "Maria Souza"
-        const val UPDATED_EMAIL = "maria@email.com"
-        const val UPDATED_PHONE = "11999999999"
-        const val BLANK_PHONE = " "
-        const val AT_LEAST_ONE_FIELD_ERROR = "At least one field must be informed"
-        const val PHONE_BLANK_ERROR = "Phone must not be blank"
-
-        val UPDATED_INCOME: BigDecimal = BigDecimal("2500.00")
+        assertThat(exception.message).isEqualTo(PHONE_MUST_NOT_BE_BLANK)
     }
 }

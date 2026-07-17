@@ -4,11 +4,21 @@ import com.creditjourney.customer.core.domain.exception.CustomerAlreadyExistsExc
 import com.creditjourney.customer.core.domain.exception.CustomerNotFoundException
 import com.creditjourney.customer.core.port.FindCustomerByIdPort
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
-import com.creditjourney.customer.core.usecase.builder.CustomerBuilderConstants.CUSTOMER_ID
-import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_EMAIL
-import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_PHONE
-import com.creditjourney.customer.core.usecase.builder.buildCustomer
-import com.creditjourney.customer.core.usecase.builder.buildUpdateCustomerInput
+import com.creditjourney.customer.core.builder.buildCustomer
+import com.creditjourney.customer.core.builder.buildUpdateCustomerInput
+import com.creditjourney.customer.core.common.messages.CustomerMessages.AT_LEAST_ONE_FIELD_MUST_BE_INFORMED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_ALREADY_EXISTS_WITH
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_EMAIL
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_EMAIL_UPDATED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_ID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_INCOME_UPDATED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NAME_UPDATED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NOT_FOUND_WITH_CUSTOMER_ID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_PHONE
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_PHONE_UPDATED
+import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MUST_BE_VALID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.INCOME_MUST_NOT_BE_NEGATIVE
+import com.creditjourney.customer.core.common.messages.CustomerMessages.PHONE_MUST_NOT_BE_BLANK
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -53,10 +63,10 @@ class UpdateCustomerUseCaseTest(
         val result = updateCustomerUseCase.update(input)
 
         assertThat(result.customerId).isEqualTo(CUSTOMER_ID)
-        assertThat(result.name).isEqualTo("Maria Souza")
-        assertThat(result.email.value).isEqualTo("maria.souza@email.com")
-        assertThat(result.phone).isEqualTo("11988887777")
-        assertThat(result.income.value).isEqualByComparingTo(BigDecimal("2500.00"))
+        assertThat(result.name).isEqualTo(CUSTOMER_NAME_UPDATED)
+        assertThat(result.email.value).isEqualTo(CUSTOMER_EMAIL_UPDATED)
+        assertThat(result.phone).isEqualTo(CUSTOMER_PHONE_UPDATED)
+        assertThat(result.income.value).isEqualByComparingTo(CUSTOMER_INCOME_UPDATED)
         assertThat(result.updatedAt).isNotNull()
 
         verify(exactly = 1) { findCustomerByIdPort.findById(CUSTOMER_ID) }
@@ -69,7 +79,7 @@ class UpdateCustomerUseCaseTest(
     fun `should update only customer name successfully`() {
 
         val input = buildUpdateCustomerInput(
-            name = "Maria Silva",
+            name = CUSTOMER_NAME_UPDATED,
             email = null,
             phone = null,
             income = null
@@ -82,7 +92,7 @@ class UpdateCustomerUseCaseTest(
 
         val result = updateCustomerUseCase.update(input)
 
-        assertThat(result.name).isEqualTo("Maria Silva")
+        assertThat(result.name).isEqualTo(CUSTOMER_NAME_UPDATED)
         assertThat(result.email.value).isEqualTo(CUSTOMER_EMAIL)
         assertThat(result.phone).isEqualTo(CUSTOMER_PHONE)
 
@@ -129,7 +139,7 @@ class UpdateCustomerUseCaseTest(
             updateCustomerUseCase.update(input)
         }
 
-        assertThat(exception.message).isEqualTo("Customer not found with customerId: $CUSTOMER_ID")
+        assertThat(exception.message).isEqualTo("$CUSTOMER_NOT_FOUND_WITH_CUSTOMER_ID: $CUSTOMER_ID")
 
         verify(exactly = 1) { findCustomerByIdPort.findById(CUSTOMER_ID) }
         verify(exactly = 0) { customerRepositoryPort.save(any()) }
@@ -139,23 +149,24 @@ class UpdateCustomerUseCaseTest(
     fun `should throw exception when email already exists`() {
 
         val input = buildUpdateCustomerInput(
-            email = "duplicado@email.com",
+            email = CUSTOMER_EMAIL_UPDATED,
             phone = null
         )
 
         val customer = buildCustomer()
 
         every { findCustomerByIdPort.findById(CUSTOMER_ID) } returns customer
-        every { customerRepositoryPort.existsByEmail(match { it.value == "duplicado@email.com" }) } returns true
+        every { customerRepositoryPort.existsByEmail(match { it.value == CUSTOMER_EMAIL_UPDATED }) } returns true
 
         val exception = assertThrows<CustomerAlreadyExistsException> {
             updateCustomerUseCase.update(input)
         }
 
-        assertThat(exception.message).isEqualTo("Customer already exists with email: duplicado@email.com")
+        assertThat(exception.message)
+            .isEqualTo("$CUSTOMER_ALREADY_EXISTS_WITH email: $CUSTOMER_EMAIL_UPDATED")
 
         verify(exactly = 1) { findCustomerByIdPort.findById(CUSTOMER_ID) }
-        verify(exactly = 1) { customerRepositoryPort.existsByEmail(match { it.value == "duplicado@email.com" }) }
+        verify(exactly = 1) { customerRepositoryPort.existsByEmail(match { it.value == CUSTOMER_EMAIL_UPDATED }) }
         verify(exactly = 0) { customerRepositoryPort.save(any()) }
     }
 
@@ -164,22 +175,22 @@ class UpdateCustomerUseCaseTest(
 
         val input = buildUpdateCustomerInput(
             email = null,
-            phone = "11977776666"
+            phone = CUSTOMER_PHONE_UPDATED
         )
 
         val customer = buildCustomer()
 
         every { findCustomerByIdPort.findById(CUSTOMER_ID) } returns customer
-        every { customerRepositoryPort.existsByPhone("11977776666") } returns true
+        every { customerRepositoryPort.existsByPhone(CUSTOMER_PHONE_UPDATED) } returns true
 
         val exception = assertThrows<CustomerAlreadyExistsException> {
             updateCustomerUseCase.update(input)
         }
 
-        assertThat(exception.message).isEqualTo("Customer already exists with phone: 11977776666")
+        assertThat(exception.message).isEqualTo("$CUSTOMER_ALREADY_EXISTS_WITH phone: $CUSTOMER_PHONE_UPDATED")
 
         verify(exactly = 1) { findCustomerByIdPort.findById(CUSTOMER_ID) }
-        verify(exactly = 1) { customerRepositoryPort.existsByPhone("11977776666") }
+        verify(exactly = 1) { customerRepositoryPort.existsByPhone(CUSTOMER_PHONE_UPDATED) }
         verify(exactly = 0) { customerRepositoryPort.save(any()) }
     }
 
@@ -195,7 +206,7 @@ class UpdateCustomerUseCaseTest(
             )
         }
 
-        assertThat(exception.message).isEqualTo("At least one field must be informed")
+        assertThat(exception.message).isEqualTo(AT_LEAST_ONE_FIELD_MUST_BE_INFORMED)
     }
 
     @Test
@@ -207,7 +218,7 @@ class UpdateCustomerUseCaseTest(
             )
         }
 
-        assertThat(exception.message).isEqualTo("Phone must not be blank")
+        assertThat(exception.message).isEqualTo(PHONE_MUST_NOT_BE_BLANK)
     }
 
     @Test
@@ -226,7 +237,7 @@ class UpdateCustomerUseCaseTest(
             updateCustomerUseCase.update(input)
         }
 
-        assertThat(exception.message).isEqualTo("Email must be valid")
+        assertThat(exception.message).isEqualTo(EMAIL_MUST_BE_VALID)
 
         verify(exactly = 0) { customerRepositoryPort.save(any()) }
     }
@@ -248,7 +259,7 @@ class UpdateCustomerUseCaseTest(
             updateCustomerUseCase.update(input)
         }
 
-        assertThat(exception.message).isEqualTo("Income must not be negative")
+        assertThat(exception.message).isEqualTo(INCOME_MUST_NOT_BE_NEGATIVE)
 
         verify(exactly = 0) { customerRepositoryPort.save(any()) }
     }
