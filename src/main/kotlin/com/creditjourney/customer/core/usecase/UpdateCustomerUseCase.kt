@@ -11,7 +11,7 @@ import com.creditjourney.customer.core.port.UpdateCustomerPort
 import com.creditjourney.customer.core.port.input.UpdateCustomerInput
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 
-class UpdateCustomerUseCase(
+open class UpdateCustomerUseCase(
     private val findCustomerByIdPort: FindCustomerByIdPort,
     private val customerRepositoryPort: CustomerRepositoryPort
 ) : UpdateCustomerPort {
