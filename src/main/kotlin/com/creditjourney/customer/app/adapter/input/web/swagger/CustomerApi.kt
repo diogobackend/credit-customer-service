@@ -1,6 +1,7 @@
 package com.creditjourney.customer.app.adapter.input.web.swagger
 
 import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerRequest
+import com.creditjourney.customer.app.adapter.input.web.requests.UpdateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerSliceResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.ErrorResponse
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -246,4 +248,24 @@ interface CustomerApi {
         )
         @PathVariable customerId: UUID
     ): ResponseEntity<Void>
+
+    @Operation(
+        summary = "Editar cliente",
+        description = "Atualiza parcialmente os dados editáveis de um cliente"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso"),
+            ApiResponse(responseCode = "400", description = "Requisição inválida"),
+            ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+            ApiResponse(responseCode = "409", description = "E-mail ou telefone já cadastrado")
+        ]
+    )
+    @PatchMapping("/{customerId}")
+    fun update(
+        @Parameter(description = "ID do cliente", example = "11111111-1111-1111-1111-111111111111")
+        @PathVariable customerId: UUID,
+
+        @RequestBody request: UpdateCustomerRequest
+    ): ResponseEntity<CustomerResponse>
 }

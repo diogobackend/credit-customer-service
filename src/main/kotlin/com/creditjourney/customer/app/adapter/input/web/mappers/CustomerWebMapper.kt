@@ -1,11 +1,14 @@
 package com.creditjourney.customer.app.adapter.input.web.mappers
 
 import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerRequest
+import com.creditjourney.customer.app.adapter.input.web.requests.UpdateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerSliceResponse
 import com.creditjourney.customer.core.domain.model.Customer
 import com.creditjourney.customer.core.domain.model.CustomerSlice
 import com.creditjourney.customer.core.port.input.CreateCustomerInput
+import com.creditjourney.customer.core.port.input.UpdateCustomerInput
+import java.util.UUID
 
 fun CreateCustomerRequest.toInput(): CreateCustomerInput =
     CreateCustomerInput(
@@ -36,4 +39,13 @@ fun CustomerSlice.toResponse(): CustomerSliceResponse =
         size = size,
         hasNext = hasNext,
         totalElements = totalElements
+    )
+
+fun UpdateCustomerRequest.toInput(customerId: UUID): UpdateCustomerInput =
+    UpdateCustomerInput(
+        customerId = customerId,
+        name = name,
+        email = email,
+        phone = phone,
+        income = income
     )

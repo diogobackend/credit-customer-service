@@ -49,4 +49,17 @@ data class Customer(
             status = CustomerStatus.INACTIVE,
             updatedAt = LocalDateTime.now()
         )
+    fun update(
+        name: String?,
+        email: Email?,
+        phone: String?,
+        income: Income?
+    ): Customer =
+        copy(
+            name = name?.trim() ?: this.name,
+            email = email ?: this.email,
+            phone = phone?.trim() ?: this.phone,
+            income = income ?: this.income,
+            updatedAt = LocalDateTime.now()
+        )
 }
