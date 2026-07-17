@@ -4,6 +4,7 @@ import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerR
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerSliceResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.ErrorResponse
+import com.creditjourney.customer.core.domain.model.CustomerStatus
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
@@ -172,6 +173,9 @@ interface CustomerApi {
         ]
     )
     fun findAll(
+        @Parameter(description = "Status do cliente", example = "ACTIVE")
+        @RequestParam(required = false) status: CustomerStatus?,
+
         @Parameter(description = "Número da página", example = "0")
         @RequestParam(defaultValue = "0") page: Int,
 

@@ -17,6 +17,7 @@ open class FindAllCustomersUseCase(
     ): CustomerSlice =
         customerRepositoryPort.findAll(
             page = input.page,
-            size = input.size
+            size = input.size,
+            status = input.status
         )
 }

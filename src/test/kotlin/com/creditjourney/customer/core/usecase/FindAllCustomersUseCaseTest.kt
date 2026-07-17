@@ -1,6 +1,8 @@
 package com.creditjourney.customer.core.usecase
 
 import com.creditjourney.customer.core.domain.model.CustomerSlice
+import com.creditjourney.customer.core.domain.model.CustomerStatus.INACTIVE
+import com.creditjourney.customer.core.domain.model.CustomerStatus.ACTIVE
 import com.creditjourney.customer.core.port.input.FindAllCustomersInput
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import com.creditjourney.customer.core.usecase.builder.buildCustomer
@@ -34,21 +36,27 @@ class FindAllCustomersUseCaseTest(
     fun `should find all customers successfully`() {
 
         val input = FindAllCustomersInput(page = 0, size = 30)
-        val customerSlice = com.creditjourney.customer.core.domain.model.CustomerSlice(
+        val customerSlice = CustomerSlice(
             content = listOf(buildCustomer()),
             page = 0,
             size = 30,
             hasNext = false
         )
 
-        every { customerRepositoryPort.findAll(page = 0, size = 30) } returns customerSlice
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null
+            )
+        } returns customerSlice
 
         val result = findAllCustomersUseCase.findAll(input)
 
         assertThat(result).isEqualTo(customerSlice)
 
         verify(exactly = 1) {
-            customerRepositoryPort.findAll(page = 0, size = 30)
+            customerRepositoryPort.findAll(page = 0, size = 30, status = null)
         }
     }
 
@@ -56,14 +64,14 @@ class FindAllCustomersUseCaseTest(
     fun `should return empty list when there are no customers`() {
 
         val input = FindAllCustomersInput(page = 0, size = 30)
-        val customerSlice = com.creditjourney.customer.core.domain.model.CustomerSlice(
+        val customerSlice = CustomerSlice(
             content = emptyList(),
             page = 0,
             size = 30,
             hasNext = false
         )
 
-        every { customerRepositoryPort.findAll(page = 0, size = 30) } returns customerSlice
+        every { customerRepositoryPort.findAll(page = 0, size = 30, status = null) } returns customerSlice
 
         val result = findAllCustomersUseCase.findAll(input)
 
@@ -71,7 +79,7 @@ class FindAllCustomersUseCaseTest(
         assertThat(result.hasNext).isFalse()
 
         verify(exactly = 1) {
-            customerRepositoryPort.findAll(page = 0, size = 30)
+            customerRepositoryPort.findAll(page = 0, size = 30, status = null)
         }
     }
 
@@ -128,5 +136,80 @@ class FindAllCustomersUseCaseTest(
         assertThat(customerSlice.page).isEqualTo(0)
         assertThat(customerSlice.size).isEqualTo(30)
         assertThat(customerSlice.hasNext).isFalse()
+    }
+    @Test
+    fun `should find active customers successfully`() {
+
+        val input = FindAllCustomersInput(
+            page = 0,
+            size = 30,
+            status = ACTIVE
+        )
+
+        val customerSlice = CustomerSlice(
+            content = listOf(buildCustomer(status = ACTIVE)),
+            page = 0,
+            size = 30,
+            hasNext = false
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = ACTIVE
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result).isEqualTo(customerSlice)
+        assertThat(result.content).allMatch { it.status == ACTIVE }
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = ACTIVE
+            )
+        }
+    }
+
+    @Test
+    fun `should find inactive customers successfully`() {
+
+        val input = FindAllCustomersInput(
+            page = 0,
+            size = 30,
+            status = INACTIVE
+        )
+
+        val customerSlice = CustomerSlice(
+            content = listOf(buildCustomer(status = INACTIVE)),
+            page = 0,
+            size = 30,
+            hasNext = false
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = INACTIVE
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result).isEqualTo(customerSlice)
+        assertThat(result.content).allMatch { it.status == INACTIVE }
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = INACTIVE
+            )
+        }
     }
 }

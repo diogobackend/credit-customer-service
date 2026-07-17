@@ -2,6 +2,7 @@ package com.creditjourney.customer.core.port.output
 
 import com.creditjourney.customer.core.domain.model.Customer
 import com.creditjourney.customer.core.domain.model.CustomerSlice
+import com.creditjourney.customer.core.domain.model.CustomerStatus
 import com.creditjourney.customer.core.domain.valueobject.Document
 import com.creditjourney.customer.core.domain.valueobject.Email
 import java.util.UUID
@@ -13,5 +14,5 @@ interface CustomerRepositoryPort {
     fun existsByPhone(phone: String): Boolean
     fun save(customer: Customer): Customer
     fun findById(customerId: UUID): Customer?
-    fun findAll(page: Int, size: Int): CustomerSlice
+    fun findAll(page: Int, size: Int, status: CustomerStatus?): CustomerSlice
 }

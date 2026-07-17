@@ -5,6 +5,7 @@ import com.creditjourney.customer.app.adapter.output.persistence.mapper.toEntity
 import com.creditjourney.customer.app.adapter.output.persistence.repository.CustomerJpaRepository
 import com.creditjourney.customer.core.domain.model.Customer
 import com.creditjourney.customer.core.domain.model.CustomerSlice
+import com.creditjourney.customer.core.domain.model.CustomerStatus
 import com.creditjourney.customer.core.domain.valueobject.Document
 import com.creditjourney.customer.core.domain.valueobject.Email
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
@@ -34,9 +35,17 @@ class CustomerPersistenceAdapter(
             .map { it.toDomain() }
             .orElse(null)
 
-    override fun findAll(page: Int, size: Int): CustomerSlice {
+    override fun findAll(
+        page: Int,
+        size: Int,
+        status: CustomerStatus?
+    ): CustomerSlice {
         val pageable = PageRequest.of(page, size)
-        val result = customerJpaRepository.findAllCustomers(pageable)
+
+        val result = customerJpaRepository.findAllCustomers(
+            status = status?.name,
+            pageable = pageable
+        )
 
         return CustomerSlice(
             content = result.content.map { it.toDomain() },

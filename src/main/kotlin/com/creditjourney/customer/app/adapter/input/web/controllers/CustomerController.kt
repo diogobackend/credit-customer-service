@@ -6,6 +6,7 @@ import com.creditjourney.customer.app.adapter.input.web.mappers.toResponse
 import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerSliceResponse
+import com.creditjourney.customer.core.domain.model.CustomerStatus
 import com.creditjourney.customer.core.port.CreateCustomerPort
 import com.creditjourney.customer.core.port.DeleteCustomerPort
 import com.creditjourney.customer.core.port.input.FindAllCustomersInput
@@ -46,13 +47,15 @@ class CustomerController(
 
     @GetMapping
     override fun findAll(
+        @RequestParam(required = false) status: CustomerStatus?,
         @RequestParam(defaultValue = "0") page: Int,
-        @RequestParam(defaultValue = "20") size: Int
+        @RequestParam(defaultValue = "30") size: Int
     ): ResponseEntity<CustomerSliceResponse> {
         val result = findAllCustomersPort.findAll(
             FindAllCustomersInput(
                 page = page,
-                size = size
+                size = size,
+                status = status
             )
         )
 
