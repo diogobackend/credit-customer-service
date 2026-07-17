@@ -3,6 +3,7 @@ package com.creditjourney.customer.core.usecase
 import com.creditjourney.customer.core.domain.model.Customer
 import com.creditjourney.customer.core.domain.model.CustomerStatus.INACTIVE
 import com.creditjourney.customer.core.domain.model.CustomerStatus.ACTIVE
+import com.creditjourney.customer.core.port.input.FindAllCustomersInput
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_DOCUMENT
 import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_EMAIL
@@ -144,10 +145,15 @@ class FindAllCustomersUseCaseTest(
     @Test
     fun `should create input with default values`() {
 
-        val input = buildFindAllCustomersInput()
+        val input = FindAllCustomersInput()
 
         assertThat(input.page).isEqualTo(0)
         assertThat(input.size).isEqualTo(30)
+        assertThat(input.status).isNull()
+        assertThat(input.search).isNull()
+        assertThat(input.name).isNull()
+        assertThat(input.minIncome).isNull()
+        assertThat(input.maxIncome).isNull()
     }
 
     @Test
