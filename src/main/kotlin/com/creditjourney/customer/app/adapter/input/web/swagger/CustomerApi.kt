@@ -140,7 +140,7 @@ interface CustomerApi {
 
     @Operation(
         summary = "Listar clientes",
-        description = "Lista clientes cadastrados usando paginação performática sem count total."
+        description = "Lista clientes cadastrados usando paginação e filtros opcionais. Os filtros podem ser combinados para refinar a busca"
     )
     @ApiResponses(
         value = [
@@ -186,10 +186,10 @@ interface CustomerApi {
         @Parameter(description = "Quantidade de registros por página", example = "30")
         @RequestParam(defaultValue = "30") size: Int,
 
-        @Parameter(description = "Busca por documento, e-mail ou telefone", example = "fer@example.com")
+        @Parameter(description = "Busca por documento, e-mail ou telefone", example = "dio7@gmail.com")
         @RequestParam(required = false) search: String?,
 
-        @Parameter(description = "Busca parcial por nome", example = "Ma")
+        @Parameter(description = "Busca parcial por nome", example = "A")
         @RequestParam(required = false) name: String?,
 
         @Parameter(description = "Renda mínima", example = "500")
@@ -213,7 +213,7 @@ interface CustomerApi {
     )
     @DeleteMapping("/{customerId}")
     fun delete(
-        @Parameter(description = "ID do cliente", example = "11111111-1111-1111-1111-111111111111")
+        @Parameter(description = "ID do cliente", example = "0416adad-f623-4622-a6ae-cabd86aab1ae")
         @PathVariable customerId: UUID,
 
         @Parameter(description = "Novo status do cliente", example = "INACTIVE")
@@ -234,7 +234,7 @@ interface CustomerApi {
     )
     @PatchMapping("/{customerId}")
     fun update(
-        @Parameter(description = "ID do cliente", example = "11111111-1111-1111-1111-111111111111")
+        @Parameter(description = "ID do cliente", example = "0416adad-f623-4622-a6ae-cabd86aab1ae")
         @PathVariable customerId: UUID,
 
         @RequestBody request: UpdateCustomerRequest
