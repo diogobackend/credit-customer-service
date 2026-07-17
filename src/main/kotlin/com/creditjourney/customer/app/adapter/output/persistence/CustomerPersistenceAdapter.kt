@@ -60,7 +60,8 @@ class CustomerPersistenceAdapter(
             content = result.content.map { it.toDomain() },
             page = page,
             size = size,
-            hasNext = result.hasNext()
+            hasNext = result.hasNext(),
+            totalElements = result.totalElements
         )
     }
 }

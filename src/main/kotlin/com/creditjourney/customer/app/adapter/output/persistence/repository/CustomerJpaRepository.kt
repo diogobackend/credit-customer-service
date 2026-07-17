@@ -1,8 +1,8 @@
 package com.creditjourney.customer.app.adapter.output.persistence.repository
 
 import com.creditjourney.customer.app.adapter.output.persistence.entity.CustomerEntity
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Slice
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -41,6 +41,6 @@ interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
         @Param("minIncome") minIncome: BigDecimal?,
         @Param("maxIncome") maxIncome: BigDecimal?,
         pageable: Pageable
-    ): Slice<CustomerEntity>
+    ): Page<CustomerEntity>
 
 }

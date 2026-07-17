@@ -4,5 +4,6 @@ data class CustomerSliceResponse(
     val content: List<CustomerResponse>,
     val page: Int,
     val size: Int,
-    val hasNext: Boolean
+    val hasNext: Boolean,
+    val totalElements: Long
 )

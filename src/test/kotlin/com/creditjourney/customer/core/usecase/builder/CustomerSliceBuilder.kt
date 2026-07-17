@@ -7,11 +7,13 @@ fun buildCustomerSlice(
     content: List<Customer> = listOf(buildCustomer()),
     page: Int = 0,
     size: Int = 30,
-    hasNext: Boolean = false
+    hasNext: Boolean = false,
+    totalElements: Long = content.size.toLong()
 ): CustomerSlice =
     CustomerSlice(
         content = content,
         page = page,
         size = size,
-        hasNext = hasNext
+        hasNext = hasNext,
+        totalElements = totalElements
     )

@@ -153,12 +153,15 @@ class FindAllCustomersUseCaseTest(
     @Test
     fun `should create customer slice successfully`() {
 
-        val customerSlice = buildCustomerSlice()
+        val customerSlice = buildCustomerSlice(
+            totalElements = 1
+        )
 
         assertThat(customerSlice.content).hasSize(1)
         assertThat(customerSlice.page).isEqualTo(0)
         assertThat(customerSlice.size).isEqualTo(30)
         assertThat(customerSlice.hasNext).isFalse()
+        assertThat(customerSlice.totalElements).isEqualTo(1)
     }
 
     @Test
@@ -567,6 +570,48 @@ class FindAllCustomersUseCaseTest(
             .isEqualTo("Min income must be less than or equal to max income")
     }
 
+    @Test
+    fun `should return total elements successfully`() {
+
+        val input = buildFindAllCustomersInput()
+
+        val customerSlice = buildCustomerSlice(
+            content = listOf(
+                buildCustomer(name = "Maria"),
+                buildCustomer(name = "João")
+            ),
+            totalElements = 5
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = null,
+                maxIncome = null
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result.totalElements).isEqualTo(5)
+        assertThat(result.content).hasSize(2)
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = null,
+                maxIncome = null
+            )
+        }
+    }
 
     @ParameterizedTest
     @MethodSource("searchFilters")

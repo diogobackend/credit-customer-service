@@ -34,5 +34,6 @@ fun CustomerSlice.toResponse(): CustomerSliceResponse =
         content = content.map { it.toResponse() },
         page = page,
         size = size,
-        hasNext = hasNext
+        hasNext = hasNext,
+        totalElements = totalElements
     )
