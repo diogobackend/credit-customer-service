@@ -1,15 +1,15 @@
 package com.creditjourney.customer.core.usecase
 
 import com.creditjourney.customer.core.domain.model.Customer
-import com.creditjourney.customer.core.domain.model.CustomerSlice
 import com.creditjourney.customer.core.domain.model.CustomerStatus.INACTIVE
 import com.creditjourney.customer.core.domain.model.CustomerStatus.ACTIVE
-import com.creditjourney.customer.core.port.input.FindAllCustomersInput
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_DOCUMENT
 import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_EMAIL
 import com.creditjourney.customer.core.usecase.builder.CustomerInputBuilderConstants.CUSTOMER_PHONE
 import com.creditjourney.customer.core.usecase.builder.buildCustomer
+import com.creditjourney.customer.core.usecase.builder.buildCustomerSlice
+import com.creditjourney.customer.core.usecase.builder.buildFindAllCustomersInput
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -42,20 +42,16 @@ class FindAllCustomersUseCaseTest(
     @Test
     fun `should find all customers successfully`() {
 
-        val input = FindAllCustomersInput(page = 0, size = 30)
-        val customerSlice = CustomerSlice(
-            content = listOf(buildCustomer()),
-            page = 0,
-            size = 30,
-            hasNext = false
-        )
+        val input = buildFindAllCustomersInput()
+        val customerSlice = buildCustomerSlice()
 
         every {
             customerRepositoryPort.findAll(
                 page = 0,
                 size = 30,
                 status = null,
-                search = null
+                search = null,
+                name = null
             )
         } returns customerSlice
 
@@ -64,22 +60,19 @@ class FindAllCustomersUseCaseTest(
         assertThat(result).isEqualTo(customerSlice)
 
         verify(exactly = 1) {
-            customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null)
+            customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null, name = null)
         }
     }
 
     @Test
     fun `should return empty list when there are no customers`() {
 
-        val input = FindAllCustomersInput(page = 0, size = 30)
-        val customerSlice = CustomerSlice(
-            content = emptyList(),
-            page = 0,
-            size = 30,
-            hasNext = false
+        val input = buildFindAllCustomersInput()
+        val customerSlice = buildCustomerSlice(
+            content = emptyList()
         )
 
-        every { customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null) } returns customerSlice
+        every { customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null, name = null) } returns customerSlice
 
         val result = findAllCustomersUseCase.findAll(input)
 
@@ -87,7 +80,7 @@ class FindAllCustomersUseCaseTest(
         assertThat(result.hasNext).isFalse()
 
         verify(exactly = 1) {
-            customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null)
+            customerRepositoryPort.findAll(page = 0, size = 30, status = null, search = null, name = null)
         }
     }
 
@@ -95,7 +88,7 @@ class FindAllCustomersUseCaseTest(
     fun `should throw exception when page is negative`() {
 
         val exception = assertThrows<IllegalArgumentException> {
-            FindAllCustomersInput(page = -1, size = 30)
+            buildFindAllCustomersInput(page = -1)
         }
 
         assertThat(exception.message).isEqualTo("Page must not be negative")
@@ -105,7 +98,7 @@ class FindAllCustomersUseCaseTest(
     fun `should throw exception when size is zero`() {
 
         val exception = assertThrows<IllegalArgumentException> {
-            FindAllCustomersInput(page = 0, size = 0)
+            buildFindAllCustomersInput(size = 0)
         }
 
         assertThat(exception.message).isEqualTo("Size must be between 1 and 100")
@@ -115,7 +108,7 @@ class FindAllCustomersUseCaseTest(
     fun `should throw exception when size is greater than one hundred`() {
 
         val exception = assertThrows<IllegalArgumentException> {
-            FindAllCustomersInput(page = 0, size = 101)
+            buildFindAllCustomersInput(size = 101)
         }
 
         assertThat(exception.message).isEqualTo("Size must be between 1 and 100")
@@ -124,7 +117,7 @@ class FindAllCustomersUseCaseTest(
     @Test
     fun `should create input with default values`() {
 
-        val input = FindAllCustomersInput()
+        val input = buildFindAllCustomersInput()
 
         assertThat(input.page).isEqualTo(0)
         assertThat(input.size).isEqualTo(30)
@@ -133,32 +126,23 @@ class FindAllCustomersUseCaseTest(
     @Test
     fun `should create customer slice successfully`() {
 
-        val customerSlice = CustomerSlice(
-            content = listOf(buildCustomer()),
-            page = 0,
-            size = 30,
-            hasNext = false
-        )
+        val customerSlice = buildCustomerSlice()
 
         assertThat(customerSlice.content).hasSize(1)
         assertThat(customerSlice.page).isEqualTo(0)
         assertThat(customerSlice.size).isEqualTo(30)
         assertThat(customerSlice.hasNext).isFalse()
     }
+
     @Test
     fun `should find active customers successfully`() {
 
-        val input = FindAllCustomersInput(
-            page = 0,
-            size = 30,
+        val input = buildFindAllCustomersInput(
             status = ACTIVE
         )
 
-        val customerSlice = CustomerSlice(
-            content = listOf(buildCustomer(status = ACTIVE)),
-            page = 0,
-            size = 30,
-            hasNext = false
+        val customerSlice = buildCustomerSlice(
+            content = listOf(buildCustomer(status = ACTIVE))
         )
 
         every {
@@ -166,7 +150,8 @@ class FindAllCustomersUseCaseTest(
                 page = 0,
                 size = 30,
                 status = ACTIVE,
-                search = null
+                search = null,
+                name = null
             )
         } returns customerSlice
 
@@ -180,7 +165,8 @@ class FindAllCustomersUseCaseTest(
                 page = 0,
                 size = 30,
                 status = ACTIVE,
-                search = null
+                search = null,
+                name = null
             )
         }
     }
@@ -188,18 +174,12 @@ class FindAllCustomersUseCaseTest(
     @Test
     fun `should find inactive customers successfully`() {
 
-        val input = FindAllCustomersInput(
-            page = 0,
-            size = 30,
-            status = INACTIVE,
-            search = null
+        val input = buildFindAllCustomersInput(
+            status = INACTIVE
         )
 
-        val customerSlice = CustomerSlice(
-            content = listOf(buildCustomer(status = INACTIVE)),
-            page = 0,
-            size = 30,
-            hasNext = false
+        val customerSlice = buildCustomerSlice(
+            content = listOf(buildCustomer(status = INACTIVE))
         )
 
         every {
@@ -207,7 +187,8 @@ class FindAllCustomersUseCaseTest(
                 page = 0,
                 size = 30,
                 status = INACTIVE,
-                search = null
+                search = null,
+                name = null
             )
         } returns customerSlice
 
@@ -221,10 +202,162 @@ class FindAllCustomersUseCaseTest(
                 page = 0,
                 size = 30,
                 status = INACTIVE,
-                search = null
+                search = null,
+                name = null
             )
         }
     }
+
+    @Test
+    fun `should trim name filter before searching`() {
+
+        val input = buildFindAllCustomersInput(
+            name = "  Ma  "
+        )
+
+        val customerSlice = buildCustomerSlice(
+            content = listOf(buildCustomer(name = "Maria"))
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = "Ma"
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result).isEqualTo(customerSlice)
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = "Ma"
+            )
+        }
+    }
+
+    @Test
+    fun `should find customers by partial name successfully`() {
+
+        val name = "Ma"
+
+        val input = buildFindAllCustomersInput(
+            name = name
+        )
+
+        val customerSlice = buildCustomerSlice(
+            content = listOf(
+                buildCustomer(name = "Maria"),
+                buildCustomer(name = "Mariana"),
+                buildCustomer(name = "Marinalva")
+            )
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = name
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result).isEqualTo(customerSlice)
+        assertThat(result.content).allMatch { it.name.contains(name) }
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = name
+            )
+        }
+    }
+
+    @Test
+    fun `should search with null name when name filter is null`() {
+
+        val input = buildFindAllCustomersInput()
+
+        val customerSlice = buildCustomerSlice(
+            content = emptyList()
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result).isEqualTo(customerSlice)
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null
+            )
+        }
+    }
+
+    @Test
+    fun `should search with null name when name filter is blank`() {
+
+        val input = buildFindAllCustomersInput(
+            name = "  "
+        )
+
+        val customerSlice = buildCustomerSlice(
+            content = emptyList()
+        )
+
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null
+            )
+        } returns customerSlice
+
+        val result = findAllCustomersUseCase.findAll(input)
+
+        assertThat(result).isEqualTo(customerSlice)
+
+        verify(exactly = 1) {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null
+            )
+        }
+    }
+
+
     @ParameterizedTest
     @MethodSource("searchFilters")
     fun `should find customers by search successfully`(
@@ -232,14 +365,11 @@ class FindAllCustomersUseCaseTest(
         assertion: (Customer) -> Boolean
     ) {
 
-        val input = FindAllCustomersInput(
-            page = 0,
-            size = 30,
-            status = null,
+        val input = buildFindAllCustomersInput(
             search = search
         )
 
-        val customerSlice = CustomerSlice(
+        val customerSlice = buildCustomerSlice(
             content = listOf(buildCustomer()),
             page = 0,
             size = 30,
@@ -251,7 +381,8 @@ class FindAllCustomersUseCaseTest(
                 page = 0,
                 size = 30,
                 status = null,
-                search = search
+                search = search,
+                name = null
             )
         } returns customerSlice
 
@@ -265,7 +396,8 @@ class FindAllCustomersUseCaseTest(
                 page = 0,
                 size = 30,
                 status = null,
-                search = search
+                search = search,
+                name = null
             )
         }
     }

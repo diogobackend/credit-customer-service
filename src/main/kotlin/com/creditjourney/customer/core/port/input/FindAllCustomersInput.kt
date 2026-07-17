@@ -6,7 +6,8 @@ data class FindAllCustomersInput(
     val page: Int = 0,
     val size: Int = 30,
     val status: CustomerStatus? = null,
-    val search: String? = null
+    val search: String? = null,
+    val name: String? = null
 ) {
     init {
         require(page >= 0) { "Page must not be negative" }

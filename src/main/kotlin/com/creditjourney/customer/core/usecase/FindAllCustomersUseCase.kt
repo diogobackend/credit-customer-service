@@ -19,6 +19,7 @@ open class FindAllCustomersUseCase(
             page = input.page,
             size = input.size,
             status = input.status,
-            search = input.search
+            search = input.search,
+            name = input.name?.trim()?.takeIf { it.isNotBlank() }
         )
 }

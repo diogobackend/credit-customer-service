@@ -39,13 +39,15 @@ class CustomerPersistenceAdapter(
         page: Int,
         size: Int,
         status: CustomerStatus?,
-        search: String?
+        search: String?,
+        name: String?
     ): CustomerSlice {
         val pageable = PageRequest.of(page, size)
 
         val result = customerJpaRepository.findAllCustomers(
             status = status?.name,
             search = search,
+            name = name,
             pageable = pageable
         )
 

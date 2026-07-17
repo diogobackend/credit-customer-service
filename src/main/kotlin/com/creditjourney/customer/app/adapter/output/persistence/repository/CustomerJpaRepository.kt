@@ -24,12 +24,17 @@ interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
           OR c.email = :search
           OR c.phone = :search
       )
+      AND (
+          :name IS NULL
+          OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%'))
+      )
     ORDER BY c.createdAt DESC, c.customerId DESC
     """
     )
     fun findAllCustomers(
         @Param("status") status: String?,
         @Param("search") search: String?,
+        @Param("name") name: String?,
         pageable: Pageable
     ): Slice<CustomerEntity>
 

@@ -50,14 +50,16 @@ class CustomerController(
         @RequestParam(required = false) status: CustomerStatus?,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "30") size: Int,
-        @RequestParam(required = false) search: String?
+        @RequestParam(required = false) search: String?,
+        @RequestParam(required = false) name: String?
     ): ResponseEntity<CustomerSliceResponse> {
         val result = findAllCustomersPort.findAll(
             FindAllCustomersInput(
                 page = page,
                 size = size,
                 status = status,
-                search = search
+                search = search,
+                name = name
             )
         )
 
