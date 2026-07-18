@@ -16,23 +16,19 @@ import java.util.UUID
 
 @Component
 class CustomerPersistenceAdapter(
-    private val customerJpaRepository: CustomerJpaRepository
+    private val customerJpaRepository: CustomerJpaRepository,
 ) : CustomerRepositoryPort {
+    override fun existsByDocument(document: Document): Boolean = customerJpaRepository.existsByDocument(document.value)
 
-    override fun existsByDocument(document: Document): Boolean =
-        customerJpaRepository.existsByDocument(document.value)
+    override fun existsByEmail(email: Email): Boolean = customerJpaRepository.existsByEmail(email.value)
 
-    override fun existsByEmail(email: Email): Boolean =
-        customerJpaRepository.existsByEmail(email.value)
+    override fun existsByPhone(phone: String): Boolean = customerJpaRepository.existsByPhone(phone)
 
-    override fun existsByPhone(phone: String): Boolean =
-        customerJpaRepository.existsByPhone(phone)
-
-    override fun save(customer: Customer): Customer =
-        customerJpaRepository.save(customer.toEntity()).toDomain()
+    override fun save(customer: Customer): Customer = customerJpaRepository.save(customer.toEntity()).toDomain()
 
     override fun findById(customerId: UUID): Customer? =
-        customerJpaRepository.findById(customerId)
+        customerJpaRepository
+            .findById(customerId)
             .map { it.toDomain() }
             .orElse(null)
 
@@ -43,27 +39,29 @@ class CustomerPersistenceAdapter(
         search: String?,
         name: String?,
         minIncome: BigDecimal?,
-        maxIncome: BigDecimal?
+        maxIncome: BigDecimal?,
     ): CustomerSlice {
         val pageable = PageRequest.of(page, size)
 
-        val result = customerJpaRepository.findAllCustomers(
-            status = status?.name,
-            search = search,
-            name = name,
-            minIncome = minIncome,
-            maxIncome = maxIncome,
-            pageable = pageable,
-        )
+        val result =
+            customerJpaRepository.findAllCustomers(
+                status = status?.name,
+                search = search,
+                name = name,
+                minIncome = minIncome,
+                maxIncome = maxIncome,
+                pageable = pageable,
+            )
 
         return CustomerSlice(
             content = result.content.map { it.toDomain() },
             page = page,
             size = size,
             hasNext = result.hasNext(),
-            totalElements = result.totalElements
+            totalElements = result.totalElements,
         )
     }
+
     override fun deleteById(customerId: UUID) {
         customerJpaRepository.deleteById(customerId)
     }

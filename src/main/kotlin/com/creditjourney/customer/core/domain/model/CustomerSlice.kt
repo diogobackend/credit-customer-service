@@ -5,5 +5,5 @@ data class CustomerSlice(
     val page: Int,
     val size: Int,
     val hasNext: Boolean,
-    val totalElements: Long
+    val totalElements: Long,
 )

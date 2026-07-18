@@ -15,7 +15,7 @@ data class FindAllCustomersInput(
     val search: String? = null,
     val name: String? = null,
     val minIncome: BigDecimal? = null,
-    val maxIncome: BigDecimal? = null
+    val maxIncome: BigDecimal? = null,
 ) {
     init {
         require(page >= 0) {

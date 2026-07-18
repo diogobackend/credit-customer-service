@@ -18,71 +18,63 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 
 @RestControllerAdvice
 class GlobalExceptionHandler {
-
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleValidationException(
-        exception: MethodArgumentNotValidException
-    ): ResponseEntity<ErrorResponse> {
-        val message = exception.bindingResult.fieldErrors
-            .joinToString("; ") { "${it.field}: ${it.defaultMessage}" }
+    fun handleValidationException(exception: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
+        val message =
+            exception.bindingResult.fieldErrors
+                .joinToString("; ") { "${it.field}: ${it.defaultMessage}" }
 
         return errorResponse(
             status = HttpStatus.BAD_REQUEST,
-            message = message
+            message = message,
         )
     }
 
     @ExceptionHandler(CustomerAlreadyExistsException::class)
-    fun handleCustomerAlreadyExistsException(
-        exception: CustomerAlreadyExistsException
-    ): ResponseEntity<ErrorResponse> =
+    fun handleCustomerAlreadyExistsException(exception: CustomerAlreadyExistsException): ResponseEntity<ErrorResponse> =
         errorResponse(
             status = HttpStatus.CONFLICT,
-            message = exception.message ?: CUSTOMER_ALREADY_EXISTS
+            message = exception.message ?: CUSTOMER_ALREADY_EXISTS,
         )
 
     @ExceptionHandler(DataIntegrityViolationException::class)
     fun handleDataIntegrityViolationException(): ResponseEntity<ErrorResponse> =
         errorResponse(
             status = HttpStatus.CONFLICT,
-            message = CUSTOMER_ALREADY_EXISTS
+            message = CUSTOMER_ALREADY_EXISTS,
         )
 
     @ExceptionHandler(IllegalArgumentException::class)
-    fun handleIllegalArgumentException(
-        exception: IllegalArgumentException
-    ): ResponseEntity<ErrorResponse> =
+    fun handleIllegalArgumentException(exception: IllegalArgumentException): ResponseEntity<ErrorResponse> =
         errorResponse(
             status = HttpStatus.BAD_REQUEST,
-            message = exception.message ?: INVALID_REQUEST
+            message = exception.message ?: INVALID_REQUEST,
         )
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleHttpMessageNotReadableException(): ResponseEntity<ErrorResponse> =
         errorResponse(
             status = HttpStatus.BAD_REQUEST,
-            message = INVALID_REQUEST_BODY
+            message = INVALID_REQUEST_BODY,
         )
 
     @ExceptionHandler(Exception::class)
     fun handleGenericException(): ResponseEntity<ErrorResponse> =
         errorResponse(
             status = HttpStatus.INTERNAL_SERVER_ERROR,
-            message = UNEXPECTED_ERROR
+            message = UNEXPECTED_ERROR,
         )
 
     @ExceptionHandler(CustomerNotFoundException::class)
-    fun handleCustomerNotFoundException(
-        exception: CustomerNotFoundException
-    ): ResponseEntity<ErrorResponse> =
+    fun handleCustomerNotFoundException(exception: CustomerNotFoundException): ResponseEntity<ErrorResponse> =
         errorResponse(
             status = HttpStatus.NOT_FOUND,
-            message = exception.message ?: CUSTOMER_NOT_FOUND
+            message = exception.message ?: CUSTOMER_NOT_FOUND,
         )
 
     private fun errorResponse(
         status: HttpStatus,
-        message: String
+        message: String,
     ): ResponseEntity<ErrorResponse> =
         ResponseEntity
             .status(status)
@@ -90,7 +82,7 @@ class GlobalExceptionHandler {
                 ErrorResponse(
                     status = status.value(),
                     error = status.reasonPhrase,
-                    message = message
-                )
+                    message = message,
+                ),
             )
 }

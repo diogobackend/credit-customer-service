@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class OpenApiConfiguration {
-
     @Bean
     fun openAPI(): OpenAPI =
         OpenAPI()
@@ -15,6 +14,6 @@ class OpenApiConfiguration {
                 Info()
                     .title("Credit Customer Service API")
                     .description("API responsável pelo cadastro, consulta e gerenciamento de clientes.")
-                    .version("v1")
+                    .version("v1"),
             )
 }

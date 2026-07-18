@@ -9,12 +9,11 @@ import java.util.UUID
 
 open class DeleteCustomerUseCase(
     private val findCustomerByIdPort: FindCustomerByIdPort,
-    private val customerRepositoryPort: CustomerRepositoryPort
+    private val customerRepositoryPort: CustomerRepositoryPort,
 ) : DeleteCustomerPort {
-
     @LogInfo(logParameters = true)
     override fun delete(
-        @LogParameter customerId: UUID
+        @LogParameter customerId: UUID,
     ) {
         findCustomerByIdPort.findById(customerId)
         customerRepositoryPort.deleteById(customerId)

@@ -28,13 +28,12 @@ import java.util.UUID
 
 @Tag(
     name = "Customers",
-    description = "Endpoints para cadastro e gerenciamento de clientes"
+    description = "Endpoints para cadastro e gerenciamento de clientes",
 )
 interface CustomerApi {
-
     @Operation(
         summary = "Criar cliente",
-        description = "Cadastra um novo cliente na plataforma de jornada de crédito."
+        description = "Cadastra um novo cliente na plataforma de jornada de crédito.",
     )
     @ApiResponses(
         value = [
@@ -44,9 +43,9 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = CustomerResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = CustomerResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "400",
@@ -54,9 +53,9 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = ErrorResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "409",
@@ -64,9 +63,9 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = ErrorResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "500",
@@ -74,19 +73,19 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = ErrorResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     fun create(
-        @Valid @RequestBody request: CreateCustomerRequest
+        @Valid @RequestBody request: CreateCustomerRequest,
     ): ResponseEntity<CustomerResponse>
 
     @Operation(
         summary = "Consultar cliente por ID",
-        description = "Consulta os dados cadastrais de um cliente pelo customerId."
+        description = "Consulta os dados cadastrais de um cliente pelo customerId.",
     )
     @ApiResponses(
         value = [
@@ -96,9 +95,9 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = CustomerResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = CustomerResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "400",
@@ -106,9 +105,9 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = ErrorResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "404",
@@ -116,9 +115,9 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = ErrorResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "500",
@@ -126,23 +125,25 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = ErrorResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     fun findById(
         @Parameter(
             description = "Identificador único do cliente",
-            example = "0416adad-f623-4622-a6ae-cabd86aab1ae"
+            example = "0416adad-f623-4622-a6ae-cabd86aab1ae",
         )
-        @PathVariable customerId: UUID
+        @PathVariable customerId: UUID,
     ): ResponseEntity<CustomerResponse>
 
     @Operation(
         summary = "Listar clientes",
-        description = "Lista clientes cadastrados usando paginação e filtros opcionais. Os filtros podem ser combinados para refinar a busca"
+        description =
+            "Lista clientes cadastrados usando paginação e filtros opcionais. " +
+                "Os filtros podem ser combinados para refinar a busca",
     )
     @ApiResponses(
         value = [
@@ -152,9 +153,9 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = CustomerSliceResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = CustomerSliceResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "400",
@@ -162,9 +163,9 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
+                        schema = Schema(implementation = ErrorResponse::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "500",
@@ -172,89 +173,80 @@ interface CustomerApi {
                 content = [
                     Content(
                         mediaType = MediaType.APPLICATION_JSON_VALUE,
-                        schema = Schema(implementation = ErrorResponse::class)
-                    )
-                ]
-            )
-        ]
+                        schema = Schema(implementation = ErrorResponse::class),
+                    ),
+                ],
+            ),
+        ],
     )
     fun findAll(
         @Parameter(description = "Status do cliente", example = "ACTIVE")
         @RequestParam(required = false) status: CustomerStatus?,
-
         @Parameter(description = "Número da página", example = "0")
         @RequestParam(defaultValue = "0") page: Int,
-
         @Parameter(description = "Quantidade de registros por página", example = "30")
         @RequestParam(defaultValue = "30") size: Int,
-
         @Parameter(description = "Busca por documento, e-mail ou telefone", example = "dio7@gmail.com")
         @RequestParam(required = false) search: String?,
-
         @Parameter(description = "Busca parcial por nome", example = "A")
         @RequestParam(required = false) name: String?,
-
         @Parameter(description = "Renda mínima", example = "500")
         @RequestParam(required = false) minIncome: BigDecimal?,
-
         @Parameter(description = "Renda máxima", example = "1000")
-        @RequestParam(required = false) maxIncome: BigDecimal?
-
+        @RequestParam(required = false) maxIncome: BigDecimal?,
     ): ResponseEntity<CustomerSliceResponse>
 
     @Operation(
         summary = "Excluir cliente",
-        description = "Remove definitivamente o cliente do banco de dados"
+        description = "Remove definitivamente o cliente do banco de dados",
     )
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "204", description = "Cliente excluído com sucesso"),
             ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
-            ApiResponse(responseCode = "500", description = "Erro inesperado")
-        ]
+            ApiResponse(responseCode = "500", description = "Erro inesperado"),
+        ],
     )
     @DeleteMapping("/{customerId}")
     fun delete(
         @Parameter(description = "ID do cliente", example = "11111111-1111-1111-1111-111111111111")
-        @PathVariable customerId: UUID
+        @PathVariable customerId: UUID,
     ): ResponseEntity<Void>
 
     @Operation(
         summary = "Editar cliente",
-        description = "Atualiza parcialmente os dados editáveis de um cliente"
+        description = "Atualiza parcialmente os dados editáveis de um cliente",
     )
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso"),
             ApiResponse(responseCode = "400", description = "Requisição inválida"),
             ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
-            ApiResponse(responseCode = "409", description = "E-mail ou telefone já cadastrado")
-        ]
+            ApiResponse(responseCode = "409", description = "E-mail ou telefone já cadastrado"),
+        ],
     )
     @PatchMapping("/{customerId}")
     fun update(
         @Parameter(description = "ID do cliente", example = "0416adad-f623-4622-a6ae-cabd86aab1ae")
         @PathVariable customerId: UUID,
-
-        @RequestBody request: UpdateCustomerRequest
+        @RequestBody request: UpdateCustomerRequest,
     ): ResponseEntity<CustomerResponse>
 
     @Operation(
         summary = "Alterar status do cliente",
-        description = "Altera o status do cliente para ACTIVE, INACTIVE ou BLOCKED"
+        description = "Altera o status do cliente para ACTIVE, INACTIVE ou BLOCKED",
     )
     @ApiResponses(
         value = [
             ApiResponse(responseCode = "200", description = "Status alterado com sucesso"),
             ApiResponse(responseCode = "400", description = "Status inválido"),
-            ApiResponse(responseCode = "404", description = "Cliente não encontrado")
-        ]
+            ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+        ],
     )
     @PutMapping("/{customerId}/status")
     fun changeStatus(
         @Parameter(description = "ID do cliente", example = "0416adad-f623-4622-a6ae-cabd86aab1ae")
         @PathVariable customerId: UUID,
-
-        @RequestBody request: ChangeCustomerStatusRequest
+        @RequestBody request: ChangeCustomerStatusRequest,
     ): ResponseEntity<CustomerResponse>
 }

@@ -17,7 +17,7 @@ fun Customer.toEntity(): CustomerEntity =
         income = income.value,
         status = status.name,
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
     )
 
 fun CustomerEntity.toDomain(): Customer =
@@ -30,5 +30,5 @@ fun CustomerEntity.toDomain(): Customer =
         income = Income(income),
         status = CustomerStatus.valueOf(status),
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
     )

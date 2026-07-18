@@ -1,11 +1,23 @@
 package com.creditjourney.customer.core.usecase
 
+import com.creditjourney.customer.core.builder.buildCreateCustomerInput
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_ALREADY_EXISTS_WITH
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_DOCUMENT
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_EMAIL
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_INCOME
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NAME
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NAME_MUST_NOT_BE_BLANK
+import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_PHONE
+import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_CONTAIN_ONLY_DIGITS
+import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_HAVE_ELEVEN_DIGITS
+import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_NOT_BE_BLANK
+import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MUST_BE_VALID
+import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MUST_NOT_BE_BLANK
+import com.creditjourney.customer.core.common.messages.CustomerMessages.INCOME_MUST_NOT_BE_NEGATIVE
 import com.creditjourney.customer.core.domain.exception.CustomerAlreadyExistsException
 import com.creditjourney.customer.core.domain.model.Customer
 import com.creditjourney.customer.core.domain.model.CustomerStatus
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
-import com.creditjourney.customer.core.builder.buildCreateCustomerInput
-import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_ALREADY_EXISTS_WITH
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -20,28 +32,14 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import java.math.BigDecimal
-import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_DOCUMENT
-import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_EMAIL
-import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_INCOME
-import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NAME
-import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NAME_MUST_NOT_BE_BLANK
-import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_PHONE
-import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_CONTAIN_ONLY_DIGITS
-import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_HAVE_ELEVEN_DIGITS
-import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_NOT_BE_BLANK
-import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MUST_BE_VALID
-import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MUST_NOT_BE_BLANK
-import com.creditjourney.customer.core.common.messages.CustomerMessages.INCOME_MUST_NOT_BE_NEGATIVE
 
 @ExtendWith(MockKExtension::class)
 class CreateCustomerUseCaseTest(
     @param:MockK
     private val customerRepositoryPort: CustomerRepositoryPort,
-
     @param:InjectMockKs
-    private val createCustomerUseCase: CreateCustomerUseCase
+    private val createCustomerUseCase: CreateCustomerUseCase,
 ) {
-
     @BeforeEach
     fun setUp() {
         mockCustomerDoesNotExist()
@@ -55,7 +53,6 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should create customer successfully`() {
-
         val input = buildCreateCustomerInput()
         val result = createCustomerUseCase.create(input)
 
@@ -68,19 +65,18 @@ class CreateCustomerUseCaseTest(
             customerRepositoryPort.save(
                 match {
                     it.name == CUSTOMER_NAME &&
-                            it.document.value == CUSTOMER_DOCUMENT &&
-                            it.email.value == CUSTOMER_EMAIL &&
-                            it.phone == CUSTOMER_PHONE &&
-                            it.income.value.compareTo(CUSTOMER_INCOME) == 0 &&
-                            it.status == CustomerStatus.ACTIVE
-                }
+                        it.document.value == CUSTOMER_DOCUMENT &&
+                        it.email.value == CUSTOMER_EMAIL &&
+                        it.phone == CUSTOMER_PHONE &&
+                        it.income.value.compareTo(CUSTOMER_INCOME) == 0 &&
+                        it.status == CustomerStatus.ACTIVE
+                },
             )
         }
     }
 
     @Test
     fun `should create customer without phone`() {
-
         val input = buildCreateCustomerInput(phone = null)
         val result = createCustomerUseCase.create(input)
 
@@ -97,11 +93,11 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should create customer trimming name and phone`() {
-
-        val input = buildCreateCustomerInput(
-            name = "  $CUSTOMER_NAME  ",
-            phone = " $CUSTOMER_PHONE "
-        )
+        val input =
+            buildCreateCustomerInput(
+                name = "  $CUSTOMER_NAME  ",
+                phone = " $CUSTOMER_PHONE ",
+            )
 
         val result = createCustomerUseCase.create(input)
 
@@ -116,26 +112,24 @@ class CreateCustomerUseCaseTest(
             customerRepositoryPort.save(
                 match {
                     it.name == CUSTOMER_NAME &&
-                            it.phone == CUSTOMER_PHONE
-                }
+                        it.phone == CUSTOMER_PHONE
+                },
             )
         }
     }
 
     @Test
     fun `should throw exception when document already exists`() {
-
         val input = buildCreateCustomerInput()
 
         every {
             customerRepositoryPort.existsByDocument(match { it.value == CUSTOMER_DOCUMENT })
         } returns true
 
-
-        val exception = assertThrows<CustomerAlreadyExistsException> {
-            createCustomerUseCase.create(input)
-        }
-
+        val exception =
+            assertThrows<CustomerAlreadyExistsException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo("$CUSTOMER_ALREADY_EXISTS_WITH document: $CUSTOMER_DOCUMENT")
@@ -153,16 +147,16 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when email already exists`() {
-
         val input = buildCreateCustomerInput()
 
         every {
             customerRepositoryPort.existsByEmail(match { it.value == CUSTOMER_EMAIL })
         } returns true
 
-        val exception = assertThrows<CustomerAlreadyExistsException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<CustomerAlreadyExistsException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo("$CUSTOMER_ALREADY_EXISTS_WITH email: $CUSTOMER_EMAIL")
@@ -180,16 +174,16 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when phone already exists`() {
-
         val input = buildCreateCustomerInput()
 
         every {
             customerRepositoryPort.existsByPhone(CUSTOMER_PHONE)
         } returns true
 
-        val exception = assertThrows<CustomerAlreadyExistsException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<CustomerAlreadyExistsException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo("$CUSTOMER_ALREADY_EXISTS_WITH phone: $CUSTOMER_PHONE")
@@ -207,12 +201,12 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when document is blank`() {
-
         val input = buildCreateCustomerInput(document = "")
 
-        val exception = assertThrows<IllegalArgumentException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo(DOCUMENT_MUST_NOT_BE_BLANK)
@@ -222,12 +216,12 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when document contains letters`() {
-
         val input = buildCreateCustomerInput(document = "123abc78900")
 
-        val exception = assertThrows<IllegalArgumentException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo(DOCUMENT_MUST_CONTAIN_ONLY_DIGITS)
@@ -237,12 +231,12 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when document has invalid size`() {
-
         val input = buildCreateCustomerInput(document = "123")
 
-        val exception = assertThrows<IllegalArgumentException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo(DOCUMENT_MUST_HAVE_ELEVEN_DIGITS)
@@ -252,12 +246,12 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when email is blank`() {
-
         val input = buildCreateCustomerInput(email = "")
 
-        val exception = assertThrows<IllegalArgumentException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo(EMAIL_MUST_NOT_BE_BLANK)
@@ -267,12 +261,12 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when email is invalid`() {
-
         val input = buildCreateCustomerInput(email = "email-invalido")
 
-        val exception = assertThrows<IllegalArgumentException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo(EMAIL_MUST_BE_VALID)
@@ -282,12 +276,12 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when income is negative`() {
-
         val input = buildCreateCustomerInput(income = BigDecimal("-1.00"))
 
-        val exception = assertThrows<IllegalArgumentException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo(INCOME_MUST_NOT_BE_NEGATIVE)
@@ -305,12 +299,12 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when name is blank`() {
-
         val input = buildCreateCustomerInput(name = "")
 
-        val exception = assertThrows<IllegalArgumentException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo(CUSTOMER_NAME_MUST_NOT_BE_BLANK)
@@ -328,7 +322,6 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should create customer when phone is blank`() {
-
         val input = buildCreateCustomerInput(phone = "   ")
 
         val result = createCustomerUseCase.create(input)
@@ -346,12 +339,12 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when document has more than eleven digits`() {
-
         val input = buildCreateCustomerInput(document = "123456789001")
 
-        val exception = assertThrows<IllegalArgumentException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo(DOCUMENT_MUST_HAVE_ELEVEN_DIGITS)
@@ -361,12 +354,12 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should throw exception when name contains only blank spaces`() {
-
         val input = buildCreateCustomerInput(name = "   ")
 
-        val exception = assertThrows<IllegalArgumentException> {
-            createCustomerUseCase.create(input)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                createCustomerUseCase.create(input)
+            }
 
         assertThat(exception.message)
             .isEqualTo(CUSTOMER_NAME_MUST_NOT_BE_BLANK)
@@ -384,7 +377,6 @@ class CreateCustomerUseCaseTest(
 
     @Test
     fun `should create customer when income is zero`() {
-
         val input = buildCreateCustomerInput(income = BigDecimal.ZERO)
 
         val result = createCustomerUseCase.create(input)
@@ -395,13 +387,12 @@ class CreateCustomerUseCaseTest(
             customerRepositoryPort.save(
                 match {
                     it.income.value.compareTo(BigDecimal.ZERO) == 0
-                }
+                },
             )
         }
     }
 
     private fun verifyCustomerRepositoryWasNotCalled() {
-
         verify(exactly = 0) {
             customerRepositoryPort.existsByDocument(any())
             customerRepositoryPort.existsByEmail(any())
@@ -411,7 +402,6 @@ class CreateCustomerUseCaseTest(
     }
 
     private fun mockCustomerDoesNotExist() {
-
         every { customerRepositoryPort.existsByDocument(match { it.value == CUSTOMER_DOCUMENT }) } returns false
         every { customerRepositoryPort.existsByEmail(match { it.value == CUSTOMER_EMAIL }) } returns false
         every { customerRepositoryPort.existsByPhone(CUSTOMER_PHONE) } returns false

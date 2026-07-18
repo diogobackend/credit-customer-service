@@ -1,6 +1,5 @@
 package com.creditjourney.customer.app.adapter.input.web.controllers
 
-import com.creditjourney.customer.app.adapter.input.web.swagger.CustomerApi
 import com.creditjourney.customer.app.adapter.input.web.mappers.toInput
 import com.creditjourney.customer.app.adapter.input.web.mappers.toResponse
 import com.creditjourney.customer.app.adapter.input.web.requests.ChangeCustomerStatusRequest
@@ -8,14 +7,15 @@ import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerR
 import com.creditjourney.customer.app.adapter.input.web.requests.UpdateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerSliceResponse
+import com.creditjourney.customer.app.adapter.input.web.swagger.CustomerApi
 import com.creditjourney.customer.core.domain.model.CustomerStatus
 import com.creditjourney.customer.core.port.ChangeCustomerStatusPort
 import com.creditjourney.customer.core.port.CreateCustomerPort
 import com.creditjourney.customer.core.port.DeleteCustomerPort
-import com.creditjourney.customer.core.port.input.FindAllCustomersInput
 import com.creditjourney.customer.core.port.FindAllCustomersPort
 import com.creditjourney.customer.core.port.FindCustomerByIdPort
 import com.creditjourney.customer.core.port.UpdateCustomerPort
+import com.creditjourney.customer.core.port.input.FindAllCustomersInput
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -40,12 +40,11 @@ class CustomerController(
     private val findAllCustomersPort: FindAllCustomersPort,
     private val deleteCustomerPort: DeleteCustomerPort,
     private val updateCustomerPort: UpdateCustomerPort,
-    private val changeCustomerStatusPort: ChangeCustomerStatusPort
+    private val changeCustomerStatusPort: ChangeCustomerStatusPort,
 ) : CustomerApi {
-
     @PostMapping
     override fun create(
-        @Valid @RequestBody request: CreateCustomerRequest
+        @Valid @RequestBody request: CreateCustomerRequest,
     ): ResponseEntity<CustomerResponse> {
         val customer = createCustomerPort.create(request.toInput())
 
@@ -62,26 +61,27 @@ class CustomerController(
         @RequestParam(required = false) search: String?,
         @RequestParam(required = false) name: String?,
         @RequestParam(required = false) minIncome: BigDecimal?,
-        @RequestParam(required = false) maxIncome: BigDecimal?
+        @RequestParam(required = false) maxIncome: BigDecimal?,
     ): ResponseEntity<CustomerSliceResponse> {
-        val result = findAllCustomersPort.findAll(
-            FindAllCustomersInput(
-                page = page,
-                size = size,
-                status = status,
-                search = search,
-                name = name,
-                minIncome = minIncome,
-                maxIncome = maxIncome
+        val result =
+            findAllCustomersPort.findAll(
+                FindAllCustomersInput(
+                    page = page,
+                    size = size,
+                    status = status,
+                    search = search,
+                    name = name,
+                    minIncome = minIncome,
+                    maxIncome = maxIncome,
+                ),
             )
-        )
 
         return ResponseEntity.ok(result.toResponse())
     }
 
     @GetMapping("/{customerId}")
     override fun findById(
-        @PathVariable customerId: UUID
+        @PathVariable customerId: UUID,
     ): ResponseEntity<CustomerResponse> {
         val customer = findCustomerByIdPort.findById(customerId)
 
@@ -90,7 +90,7 @@ class CustomerController(
 
     @DeleteMapping("/{customerId}")
     override fun delete(
-        @PathVariable customerId: UUID
+        @PathVariable customerId: UUID,
     ): ResponseEntity<Void> {
         deleteCustomerPort.delete(customerId)
 
@@ -100,22 +100,24 @@ class CustomerController(
     @PatchMapping("/{customerId}")
     override fun update(
         @PathVariable customerId: UUID,
-        @RequestBody request: UpdateCustomerRequest
+        @RequestBody request: UpdateCustomerRequest,
     ): ResponseEntity<CustomerResponse> =
         ResponseEntity.ok(
-            updateCustomerPort.update(
-                request.toInput(customerId)
-            ).toResponse()
+            updateCustomerPort
+                .update(
+                    request.toInput(customerId),
+                ).toResponse(),
         )
 
     @PutMapping("/{customerId}/status")
     override fun changeStatus(
         @PathVariable customerId: UUID,
-        @RequestBody request: ChangeCustomerStatusRequest
+        @RequestBody request: ChangeCustomerStatusRequest,
     ): ResponseEntity<CustomerResponse> =
         ResponseEntity.ok(
-            changeCustomerStatusPort.change(
-                request.toInput(customerId)
-            ).toResponse()
+            changeCustomerStatusPort
+                .change(
+                    request.toInput(customerId),
+                ).toResponse(),
         )
 }

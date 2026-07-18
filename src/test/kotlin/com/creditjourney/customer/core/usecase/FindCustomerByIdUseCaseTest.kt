@@ -1,10 +1,10 @@
 package com.creditjourney.customer.core.usecase
 
-import com.creditjourney.customer.core.domain.exception.CustomerNotFoundException
-import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import com.creditjourney.customer.core.builder.buildCustomer
 import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_ID
 import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER_NOT_FOUND_WITH_CUSTOMER_ID
+import com.creditjourney.customer.core.domain.exception.CustomerNotFoundException
+import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -21,11 +21,9 @@ import org.junit.jupiter.api.extension.ExtendWith
 class FindCustomerByIdUseCaseTest(
     @param:MockK
     private val customerRepositoryPort: CustomerRepositoryPort,
-
     @param:InjectMockKs
-    private val findCustomerByIdUseCase: FindCustomerByIdUseCase
+    private val findCustomerByIdUseCase: FindCustomerByIdUseCase,
 ) {
-
     @AfterEach
     fun tearDown() {
         clearMocks(customerRepositoryPort)
@@ -33,7 +31,6 @@ class FindCustomerByIdUseCaseTest(
 
     @Test
     fun `should find customer by id successfully`() {
-
         val customer = buildCustomer()
 
         every { customerRepositoryPort.findById(CUSTOMER_ID) } returns customer
@@ -49,12 +46,12 @@ class FindCustomerByIdUseCaseTest(
 
     @Test
     fun `should throw exception when customer is not found`() {
-
         every { customerRepositoryPort.findById(CUSTOMER_ID) } returns null
 
-        val exception = assertThrows<CustomerNotFoundException> {
-            findCustomerByIdUseCase.findById(CUSTOMER_ID)
-        }
+        val exception =
+            assertThrows<CustomerNotFoundException> {
+                findCustomerByIdUseCase.findById(CUSTOMER_ID)
+            }
 
         assertThat(exception.message)
             .isEqualTo("$CUSTOMER_NOT_FOUND_WITH_CUSTOMER_ID: $CUSTOMER_ID")

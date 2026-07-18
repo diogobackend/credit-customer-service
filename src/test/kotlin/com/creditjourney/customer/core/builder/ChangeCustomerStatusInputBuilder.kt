@@ -8,9 +8,9 @@ import java.util.UUID
 
 fun buildChangeCustomerStatusInput(
     customerId: UUID = CUSTOMER_ID,
-    status: CustomerStatus = ACTIVE
+    status: CustomerStatus = ACTIVE,
 ): ChangeCustomerStatusInput =
     ChangeCustomerStatusInput(
         customerId = customerId,
-        status = status
+        status = status,
     )

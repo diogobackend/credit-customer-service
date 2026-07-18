@@ -13,14 +13,12 @@ import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 
 open class UpdateCustomerUseCase(
     private val findCustomerByIdPort: FindCustomerByIdPort,
-    private val customerRepositoryPort: CustomerRepositoryPort
+    private val customerRepositoryPort: CustomerRepositoryPort,
 ) : UpdateCustomerPort {
-
     @LogInfo(logParameters = true, logReturn = true)
     override fun update(
-        @LogParameter input: UpdateCustomerInput
+        @LogParameter input: UpdateCustomerInput,
     ): Customer {
-
         val customer = findCustomerByIdPort.findById(input.customerId)
 
         val email = input.email?.let { Email(it) }
@@ -30,17 +28,21 @@ open class UpdateCustomerUseCase(
         validateEmail(customer, email)
         validatePhone(customer, phone)
 
-        val updatedCustomer = customer.update(
-            name = input.name,
-            email = email,
-            phone = phone,
-            income = income
-        )
+        val updatedCustomer =
+            customer.update(
+                name = input.name,
+                email = email,
+                phone = phone,
+                income = income,
+            )
 
         return customerRepositoryPort.save(updatedCustomer)
     }
 
-    private fun validateEmail(customer: Customer, email: Email?) {
+    private fun validateEmail(
+        customer: Customer,
+        email: Email?,
+    ) {
         if (
             email != null &&
             email.value != customer.email.value &&
@@ -50,7 +52,10 @@ open class UpdateCustomerUseCase(
         }
     }
 
-    private fun validatePhone(customer: Customer, phone: String?) {
+    private fun validatePhone(
+        customer: Customer,
+        phone: String?,
+    ) {
         if (
             phone != null &&
             phone != customer.phone &&

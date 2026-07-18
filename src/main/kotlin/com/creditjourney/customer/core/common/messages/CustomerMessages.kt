@@ -5,7 +5,6 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 object CustomerMessages {
-
     const val CUSTOMER_NAME_MUST_NOT_BE_BLANK = "Customer name must not be blank"
 
     const val DOCUMENT_MUST_NOT_BE_BLANK = "Document must not be blank"
@@ -54,5 +53,4 @@ object CustomerMessages {
     const val CUSTOMER_PHONE_UPDATED = "33888888888"
 
     val CUSTOMER_INCOME_UPDATED: BigDecimal = BigDecimal("7835.00")
-
 }

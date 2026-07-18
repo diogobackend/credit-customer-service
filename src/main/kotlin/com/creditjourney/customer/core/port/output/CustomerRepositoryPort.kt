@@ -9,21 +9,25 @@ import java.math.BigDecimal
 import java.util.UUID
 
 interface CustomerRepositoryPort {
-
     fun existsByDocument(document: Document): Boolean
+
     fun existsByEmail(email: Email): Boolean
+
     fun existsByPhone(phone: String): Boolean
+
     fun save(customer: Customer): Customer
+
     fun findById(customerId: UUID): Customer?
+
     fun findAll(
-            page: Int,
-            size: Int,
-            status: CustomerStatus?,
-            search: String?,
-            name: String?,
-            minIncome: BigDecimal?,
-            maxIncome: BigDecimal?
-        ): CustomerSlice
+        page: Int,
+        size: Int,
+        status: CustomerStatus?,
+        search: String?,
+        name: String?,
+        minIncome: BigDecimal?,
+        maxIncome: BigDecimal?,
+    ): CustomerSlice
 
     fun deleteById(customerId: UUID)
 }

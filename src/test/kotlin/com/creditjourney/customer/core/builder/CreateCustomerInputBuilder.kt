@@ -13,12 +13,12 @@ fun buildCreateCustomerInput(
     document: String = CUSTOMER_DOCUMENT,
     email: String = CUSTOMER_EMAIL,
     phone: String? = CUSTOMER_PHONE,
-    income: BigDecimal = CUSTOMER_INCOME
+    income: BigDecimal = CUSTOMER_INCOME,
 ): CreateCustomerInput =
     CreateCustomerInput(
         name = name,
         document = document,
         email = email,
         phone = phone,
-        income = income
+        income = income,
     )

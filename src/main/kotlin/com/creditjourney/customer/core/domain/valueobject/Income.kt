@@ -4,7 +4,7 @@ import com.creditjourney.customer.core.common.messages.CustomerMessages.INCOME_M
 import java.math.BigDecimal
 
 data class Income(
-    val value: BigDecimal
+    val value: BigDecimal,
 ) {
     init {
         require(value >= BigDecimal.ZERO) {

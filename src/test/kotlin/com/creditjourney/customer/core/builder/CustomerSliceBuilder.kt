@@ -8,12 +8,12 @@ fun buildCustomerSlice(
     page: Int = 0,
     size: Int = 30,
     hasNext: Boolean = false,
-    totalElements: Long = content.size.toLong()
+    totalElements: Long = content.size.toLong(),
 ): CustomerSlice =
     CustomerSlice(
         content = content,
         page = page,
         size = size,
         hasNext = hasNext,
-        totalElements = totalElements
+        totalElements = totalElements,
     )

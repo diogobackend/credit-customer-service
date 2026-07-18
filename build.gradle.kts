@@ -6,6 +6,7 @@ plugins {
     kotlin("plugin.jpa") version "2.2.21"
     jacoco
     kotlin("kapt") version "2.2.21"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
 group = "com.creditjourney"
@@ -92,7 +93,7 @@ tasks.jacocoTestReport {
                     include("com/creditjourney/customer/core/**")
                     exclude("**/*Companion*")
                 }
-            }
-        )
+            },
+        ),
     )
 }

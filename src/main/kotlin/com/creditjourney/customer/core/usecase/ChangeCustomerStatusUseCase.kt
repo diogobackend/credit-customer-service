@@ -10,12 +10,11 @@ import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 
 open class ChangeCustomerStatusUseCase(
     private val findCustomerByIdPort: FindCustomerByIdPort,
-    private val customerRepositoryPort: CustomerRepositoryPort
+    private val customerRepositoryPort: CustomerRepositoryPort,
 ) : ChangeCustomerStatusPort {
-
     @LogInfo(logParameters = true, logReturn = true)
     override fun change(
-        @LogParameter input: ChangeCustomerStatusInput
+        @LogParameter input: ChangeCustomerStatusInput,
     ): Customer {
         val customer = findCustomerByIdPort.findById(input.customerId)
         val updatedCustomer = customer.changeStatus(input.status)

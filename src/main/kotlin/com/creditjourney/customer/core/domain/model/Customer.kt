@@ -16,7 +16,7 @@ data class Customer(
     val income: Income,
     val status: CustomerStatus,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime? = null
+    val updatedAt: LocalDateTime? = null,
 ) {
     init {
         require(name.isNotBlank()) {
@@ -30,9 +30,9 @@ data class Customer(
             document: Document,
             email: Email,
             phone: String?,
-            income: Income
-        ): Customer {
-            return Customer(
+            income: Income,
+        ): Customer =
+            Customer(
                 customerId = UUID.randomUUID(),
                 name = name.trim(),
                 document = document,
@@ -40,28 +40,27 @@ data class Customer(
                 phone = phone?.trim(),
                 income = income,
                 status = CustomerStatus.ACTIVE,
-                createdAt = LocalDateTime.now()
+                createdAt = LocalDateTime.now(),
             )
-        }
     }
 
     fun changeStatus(status: CustomerStatus): Customer =
         copy(
             status = status,
-            updatedAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now(),
         )
 
     fun update(
         name: String?,
         email: Email?,
         phone: String?,
-        income: Income?
+        income: Income?,
     ): Customer =
         copy(
             name = name?.trim() ?: this.name,
             email = email ?: this.email,
             phone = phone?.trim() ?: this.phone,
             income = income ?: this.income,
-            updatedAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now(),
         )
 }

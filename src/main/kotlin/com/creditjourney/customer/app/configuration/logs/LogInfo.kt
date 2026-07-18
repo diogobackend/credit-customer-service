@@ -5,5 +5,5 @@ package com.creditjourney.customer.app.configuration.logs
 annotation class LogInfo(
     val logParameters: Boolean = false,
     val logReturn: Boolean = false,
-    val logMode: LogMode = LogMode.ONE_LINE
+    val logMode: LogMode = LogMode.ONE_LINE,
 )

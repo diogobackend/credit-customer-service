@@ -4,5 +4,5 @@ import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER
 
 class CustomerAlreadyExistsException(
     field: String,
-    value: String
+    value: String,
 ) : RuntimeException("$CUSTOMER_ALREADY_EXISTS_WITH $field: $value")

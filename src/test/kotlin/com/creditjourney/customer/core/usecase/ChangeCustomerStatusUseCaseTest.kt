@@ -7,8 +7,8 @@ import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER
 import com.creditjourney.customer.core.domain.exception.CustomerNotFoundException
 import com.creditjourney.customer.core.domain.model.CustomerStatus
 import com.creditjourney.customer.core.domain.model.CustomerStatus.ACTIVE
-import com.creditjourney.customer.core.domain.model.CustomerStatus.INACTIVE
 import com.creditjourney.customer.core.domain.model.CustomerStatus.BLOCKED
+import com.creditjourney.customer.core.domain.model.CustomerStatus.INACTIVE
 import com.creditjourney.customer.core.port.FindCustomerByIdPort
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import io.mockk.clearMocks
@@ -30,14 +30,11 @@ import org.junit.jupiter.params.provider.MethodSource
 class ChangeCustomerStatusUseCaseTest(
     @param:MockK
     private val findCustomerByIdPort: FindCustomerByIdPort,
-
     @param:MockK
     private val customerRepositoryPort: CustomerRepositoryPort,
-
     @param:InjectMockKs
-    private val changeCustomerStatusUseCase: ChangeCustomerStatusUseCase
+    private val changeCustomerStatusUseCase: ChangeCustomerStatusUseCase,
 ) {
-
     @AfterEach
     fun tearDown() {
         clearMocks(findCustomerByIdPort, customerRepositoryPort)
@@ -47,16 +44,17 @@ class ChangeCustomerStatusUseCaseTest(
     @MethodSource("customerStatusScenarios")
     fun `should change customer status successfully`(
         currentStatus: CustomerStatus,
-        newStatus: CustomerStatus
+        newStatus: CustomerStatus,
     ) {
+        val input =
+            buildChangeCustomerStatusInput(
+                status = newStatus,
+            )
 
-        val input = buildChangeCustomerStatusInput(
-            status = newStatus
-        )
-
-        val customer = buildCustomer(
-            status = currentStatus
-        )
+        val customer =
+            buildCustomer(
+                status = currentStatus,
+            )
 
         every { findCustomerByIdPort.findById(CUSTOMER_ID) } returns customer
         every { customerRepositoryPort.save(any()) } answers { firstArg() }
@@ -72,23 +70,23 @@ class ChangeCustomerStatusUseCaseTest(
             customerRepositoryPort.save(
                 match {
                     it.customerId == CUSTOMER_ID &&
-                            it.status == newStatus &&
-                            it.updatedAt != null
-                }
+                        it.status == newStatus &&
+                        it.updatedAt != null
+                },
             )
         }
     }
 
     @Test
     fun `should throw exception when customer is not found`() {
-
         val input = buildChangeCustomerStatusInput()
 
         every { findCustomerByIdPort.findById(CUSTOMER_ID) } throws CustomerNotFoundException(CUSTOMER_ID)
 
-        val exception = assertThrows<CustomerNotFoundException> {
-            changeCustomerStatusUseCase.change(input)
-        }
+        val exception =
+            assertThrows<CustomerNotFoundException> {
+                changeCustomerStatusUseCase.change(input)
+            }
 
         assertThat(exception.message).isEqualTo("$CUSTOMER_NOT_FOUND_WITH_CUSTOMER_ID: $CUSTOMER_ID")
 
@@ -97,13 +95,12 @@ class ChangeCustomerStatusUseCaseTest(
     }
 
     companion object {
-
         @JvmStatic
         fun customerStatusScenarios(): List<Arguments> =
             listOf(
                 Arguments.of(INACTIVE, ACTIVE),
                 Arguments.of(ACTIVE, INACTIVE),
-                Arguments.of(ACTIVE, BLOCKED)
+                Arguments.of(ACTIVE, BLOCKED),
             )
     }
 }

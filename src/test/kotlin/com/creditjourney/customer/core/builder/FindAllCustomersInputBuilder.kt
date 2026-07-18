@@ -11,7 +11,7 @@ fun buildFindAllCustomersInput(
     search: String? = null,
     name: String? = null,
     minIncome: BigDecimal? = null,
-    maxIncome: BigDecimal? = null
+    maxIncome: BigDecimal? = null,
 ): FindAllCustomersInput =
     FindAllCustomersInput(
         page = page,
@@ -20,5 +20,5 @@ fun buildFindAllCustomersInput(
         search = search,
         name = name,
         minIncome = minIncome,
-        maxIncome = maxIncome
+        maxIncome = maxIncome,
     )

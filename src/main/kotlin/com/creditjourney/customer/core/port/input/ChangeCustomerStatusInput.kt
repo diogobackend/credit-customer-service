@@ -5,5 +5,5 @@ import java.util.UUID
 
 data class ChangeCustomerStatusInput(
     val customerId: UUID,
-    val status: CustomerStatus
+    val status: CustomerStatus,
 )

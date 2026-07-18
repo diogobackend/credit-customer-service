@@ -5,7 +5,7 @@ import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT
 import com.creditjourney.customer.core.common.messages.CustomerMessages.DOCUMENT_MUST_NOT_BE_BLANK
 
 data class Document(
-    val value: String
+    val value: String,
 ) {
     init {
         require(value.isNotBlank()) {

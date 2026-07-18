@@ -10,14 +10,14 @@ data class UpdateCustomerInput(
     val name: String? = null,
     val email: String? = null,
     val phone: String? = null,
-    val income: BigDecimal? = null
+    val income: BigDecimal? = null,
 ) {
     init {
         require(
             name != null ||
-                    email != null ||
-                    phone != null ||
-                    income != null
+                email != null ||
+                phone != null ||
+                income != null,
         ) {
             AT_LEAST_ONE_FIELD_MUST_BE_INFORMED
         }

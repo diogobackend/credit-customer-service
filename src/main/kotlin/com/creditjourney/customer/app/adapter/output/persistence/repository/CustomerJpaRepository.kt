@@ -10,9 +10,10 @@ import java.math.BigDecimal
 import java.util.UUID
 
 interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
-
     fun existsByDocument(document: String): Boolean
+
     fun existsByEmail(email: String): Boolean
+
     fun existsByPhone(phone: String): Boolean
 
     @Query(
@@ -32,7 +33,7 @@ interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
       AND (:minIncome IS NULL OR c.income >= :minIncome)
       AND (:maxIncome IS NULL OR c.income <= :maxIncome)
     ORDER BY c.createdAt DESC, c.customerId DESC
-    """
+    """,
     )
     fun findAllCustomers(
         @Param("status") status: String?,
@@ -40,7 +41,6 @@ interface CustomerJpaRepository : JpaRepository<CustomerEntity, UUID> {
         @Param("name") name: String?,
         @Param("minIncome") minIncome: BigDecimal?,
         @Param("maxIncome") maxIncome: BigDecimal?,
-        pageable: Pageable
+        pageable: Pageable,
     ): Page<CustomerEntity>
-
 }

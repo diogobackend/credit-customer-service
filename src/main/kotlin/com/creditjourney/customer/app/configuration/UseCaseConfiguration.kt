@@ -18,52 +18,45 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class UseCaseConfiguration {
-
     @Bean
-    fun createCustomerPort(
-        customerRepositoryPort: CustomerRepositoryPort
-    ): CreateCustomerPort =
+    fun createCustomerPort(customerRepositoryPort: CustomerRepositoryPort): CreateCustomerPort =
         CreateCustomerUseCase(customerRepositoryPort)
 
     @Bean
-    fun findCustomerByIdPort(
-        customerRepositoryPort: CustomerRepositoryPort
-    ): FindCustomerByIdPort =
+    fun findCustomerByIdPort(customerRepositoryPort: CustomerRepositoryPort): FindCustomerByIdPort =
         FindCustomerByIdUseCase(customerRepositoryPort)
 
     @Bean
-    fun findAllCustomersPort(
-        customerRepositoryPort: CustomerRepositoryPort
-    ): FindAllCustomersPort =
+    fun findAllCustomersPort(customerRepositoryPort: CustomerRepositoryPort): FindAllCustomersPort =
         FindAllCustomersUseCase(customerRepositoryPort)
 
     @Bean
     fun deleteCustomerPort(
         findCustomerByIdPort: FindCustomerByIdPort,
-        customerRepositoryPort: CustomerRepositoryPort
+        customerRepositoryPort: CustomerRepositoryPort,
     ): DeleteCustomerPort =
         DeleteCustomerUseCase(
             findCustomerByIdPort = findCustomerByIdPort,
-            customerRepositoryPort = customerRepositoryPort
+            customerRepositoryPort = customerRepositoryPort,
         )
 
     @Bean
     fun updateCustomerPort(
         findCustomerByIdPort: FindCustomerByIdPort,
-        customerRepositoryPort: CustomerRepositoryPort
+        customerRepositoryPort: CustomerRepositoryPort,
     ): UpdateCustomerPort =
         UpdateCustomerUseCase(
             findCustomerByIdPort = findCustomerByIdPort,
-            customerRepositoryPort = customerRepositoryPort
+            customerRepositoryPort = customerRepositoryPort,
         )
 
     @Bean
     fun changeCustomerStatusPort(
         findCustomerByIdPort: FindCustomerByIdPort,
-        customerRepositoryPort: CustomerRepositoryPort
+        customerRepositoryPort: CustomerRepositoryPort,
     ): ChangeCustomerStatusPort =
         ChangeCustomerStatusUseCase(
             findCustomerByIdPort = findCustomerByIdPort,
-            customerRepositoryPort = customerRepositoryPort
+            customerRepositoryPort = customerRepositoryPort,
         )
 }

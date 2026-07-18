@@ -4,5 +4,5 @@ import com.creditjourney.customer.core.common.messages.CustomerMessages.CUSTOMER
 import java.util.UUID
 
 class CustomerNotFoundException(
-    customerId: UUID
+    customerId: UUID,
 ) : RuntimeException("$CUSTOMER_NOT_FOUND_WITH_CUSTOMER_ID: $customerId")

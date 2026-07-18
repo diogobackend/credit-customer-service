@@ -18,7 +18,7 @@ fun CreateCustomerRequest.toInput(): CreateCustomerInput =
         document = document,
         email = email,
         phone = phone,
-        income = income
+        income = income,
     )
 
 fun Customer.toResponse(): CustomerResponse =
@@ -31,7 +31,7 @@ fun Customer.toResponse(): CustomerResponse =
         income = income.value,
         status = status.name,
         createdAt = createdAt,
-        updatedAt = updatedAt
+        updatedAt = updatedAt,
     )
 
 fun CustomerSlice.toResponse(): CustomerSliceResponse =
@@ -40,7 +40,7 @@ fun CustomerSlice.toResponse(): CustomerSliceResponse =
         page = page,
         size = size,
         hasNext = hasNext,
-        totalElements = totalElements
+        totalElements = totalElements,
     )
 
 fun UpdateCustomerRequest.toInput(customerId: UUID): UpdateCustomerInput =
@@ -49,11 +49,11 @@ fun UpdateCustomerRequest.toInput(customerId: UUID): UpdateCustomerInput =
         name = name,
         email = email,
         phone = phone,
-        income = income
+        income = income,
     )
 
 fun ChangeCustomerStatusRequest.toInput(customerId: UUID): ChangeCustomerStatusInput =
     ChangeCustomerStatusInput(
         customerId = customerId,
-        status = status
+        status = status,
     )

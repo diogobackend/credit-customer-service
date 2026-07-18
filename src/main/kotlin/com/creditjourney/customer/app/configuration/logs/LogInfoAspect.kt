@@ -11,13 +11,12 @@ import java.lang.reflect.Method
 @Aspect
 @Component
 class LogInfoAspect {
-
     private val log = KotlinLogging.logger {}
 
     @Around("@annotation(logInfo)")
     fun logMethod(
         joinPoint: ProceedingJoinPoint,
-        logInfo: LogInfo
+        logInfo: LogInfo,
     ): Any? {
         val signature = joinPoint.signature as MethodSignature
         val method = signature.method
@@ -29,7 +28,7 @@ class LogInfoAspect {
                 method = method,
                 args = joinPoint.args,
                 result = result,
-                logInfo = logInfo
+                logInfo = logInfo,
             )
         }
 
@@ -40,7 +39,7 @@ class LogInfoAspect {
         method: Method,
         args: Array<Any?>,
         result: Any?,
-        logInfo: LogInfo
+        logInfo: LogInfo,
     ): String {
         val message = StringBuilder("M=${method.name}")
 
@@ -57,16 +56,16 @@ class LogInfoAspect {
 
     private fun buildParameters(
         method: Method,
-        args: Array<Any?>
+        args: Array<Any?>,
     ): Map<String, Any?> =
         method.parameters
             .mapIndexedNotNull { index, parameter ->
-                val annotation = parameter.getAnnotation(LogParameter::class.java)
-                    ?: return@mapIndexedNotNull null
+                val annotation =
+                    parameter.getAnnotation(LogParameter::class.java)
+                        ?: return@mapIndexedNotNull null
 
                 val name = annotation.name.ifBlank { parameter.name }
 
                 name to args.getOrNull(index)
-            }
-            .toMap()
+            }.toMap()
 }

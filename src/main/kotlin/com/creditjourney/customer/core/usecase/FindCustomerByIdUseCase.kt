@@ -9,12 +9,11 @@ import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import java.util.UUID
 
 open class FindCustomerByIdUseCase(
-    private val customerRepositoryPort: CustomerRepositoryPort
+    private val customerRepositoryPort: CustomerRepositoryPort,
 ) : FindCustomerByIdPort {
-
     @LogInfo(logParameters = true, logReturn = true)
     override fun findById(
-        @LogParameter customerId: UUID
+        @LogParameter customerId: UUID,
     ): Customer =
         customerRepositoryPort.findById(customerId)
             ?: throw CustomerNotFoundException(customerId)

@@ -1,10 +1,5 @@
 package com.creditjourney.customer.core.usecase
 
-import com.creditjourney.customer.core.domain.model.Customer
-import com.creditjourney.customer.core.domain.model.CustomerStatus.INACTIVE
-import com.creditjourney.customer.core.domain.model.CustomerStatus.ACTIVE
-import com.creditjourney.customer.core.port.input.FindAllCustomersInput
-import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import com.creditjourney.customer.core.builder.buildCustomer
 import com.creditjourney.customer.core.builder.buildCustomerSlice
 import com.creditjourney.customer.core.builder.buildFindAllCustomersInput
@@ -16,6 +11,11 @@ import com.creditjourney.customer.core.common.messages.CustomerMessages.MIN_INCO
 import com.creditjourney.customer.core.common.messages.CustomerMessages.MIN_INCOME_MUST_NOT_BE_NEGATIVE
 import com.creditjourney.customer.core.common.messages.CustomerMessages.PAGE_MUST_NOT_BE_NEGATIVE
 import com.creditjourney.customer.core.common.messages.CustomerMessages.SIZE_MUST_BE_BETWEEN_ONE_AND_ONE_HUNDRED
+import com.creditjourney.customer.core.domain.model.Customer
+import com.creditjourney.customer.core.domain.model.CustomerStatus.ACTIVE
+import com.creditjourney.customer.core.domain.model.CustomerStatus.INACTIVE
+import com.creditjourney.customer.core.port.input.FindAllCustomersInput
+import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -36,11 +36,9 @@ import java.math.BigDecimal
 class FindAllCustomersUseCaseTest(
     @param:MockK
     private val customerRepositoryPort: CustomerRepositoryPort,
-
     @param:InjectMockKs
-    private val findAllCustomersUseCase: FindAllCustomersUseCase
+    private val findAllCustomersUseCase: FindAllCustomersUseCase,
 ) {
-
     @AfterEach
     fun tearDown() {
         clearMocks(customerRepositoryPort)
@@ -48,7 +46,6 @@ class FindAllCustomersUseCaseTest(
 
     @Test
     fun `should find all customers successfully`() {
-
         val input = buildFindAllCustomersInput()
         val customerSlice = buildCustomerSlice()
 
@@ -60,7 +57,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         } returns customerSlice
 
@@ -76,28 +73,30 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
 
     @Test
     fun `should return empty list when there are no customers`() {
-
         val input = buildFindAllCustomersInput()
-        val customerSlice = buildCustomerSlice(
-            content = emptyList()
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content = emptyList(),
+            )
 
-        every { customerRepositoryPort.findAll(
-            page = 0,
-            size = 30,
-            status = null,
-            search = null,
-            name = null,
-            minIncome = null,
-            maxIncome = null
-        ) } returns customerSlice
+        every {
+            customerRepositoryPort.findAll(
+                page = 0,
+                size = 30,
+                status = null,
+                search = null,
+                name = null,
+                minIncome = null,
+                maxIncome = null,
+            )
+        } returns customerSlice
 
         val result = findAllCustomersUseCase.findAll(input)
 
@@ -112,44 +111,43 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
 
     @Test
     fun `should throw exception when page is negative`() {
-
-        val exception = assertThrows<IllegalArgumentException> {
-            buildFindAllCustomersInput(page = -1)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                buildFindAllCustomersInput(page = -1)
+            }
 
         assertThat(exception.message).isEqualTo(PAGE_MUST_NOT_BE_NEGATIVE)
     }
 
     @Test
     fun `should throw exception when size is zero`() {
-
-        val exception = assertThrows<IllegalArgumentException> {
-            buildFindAllCustomersInput(size = 0)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                buildFindAllCustomersInput(size = 0)
+            }
 
         assertThat(exception.message).isEqualTo(SIZE_MUST_BE_BETWEEN_ONE_AND_ONE_HUNDRED)
     }
 
     @Test
     fun `should throw exception when size is greater than one hundred`() {
-
-        val exception = assertThrows<IllegalArgumentException> {
-            buildFindAllCustomersInput(size = 101)
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                buildFindAllCustomersInput(size = 101)
+            }
 
         assertThat(exception.message).isEqualTo(SIZE_MUST_BE_BETWEEN_ONE_AND_ONE_HUNDRED)
     }
 
     @Test
     fun `should create input with default values`() {
-
         val input = FindAllCustomersInput()
 
         assertThat(input.page).isEqualTo(0)
@@ -163,10 +161,10 @@ class FindAllCustomersUseCaseTest(
 
     @Test
     fun `should create customer slice successfully`() {
-
-        val customerSlice = buildCustomerSlice(
-            totalElements = 1
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                totalElements = 1,
+            )
 
         assertThat(customerSlice.content).hasSize(1)
         assertThat(customerSlice.page).isEqualTo(0)
@@ -177,14 +175,15 @@ class FindAllCustomersUseCaseTest(
 
     @Test
     fun `should find active customers successfully`() {
+        val input =
+            buildFindAllCustomersInput(
+                status = ACTIVE,
+            )
 
-        val input = buildFindAllCustomersInput(
-            status = ACTIVE
-        )
-
-        val customerSlice = buildCustomerSlice(
-            content = listOf(buildCustomer(status = ACTIVE))
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content = listOf(buildCustomer(status = ACTIVE)),
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -194,7 +193,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         } returns customerSlice
 
@@ -211,21 +210,22 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
 
     @Test
     fun `should find inactive customers successfully`() {
+        val input =
+            buildFindAllCustomersInput(
+                status = INACTIVE,
+            )
 
-        val input = buildFindAllCustomersInput(
-            status = INACTIVE
-        )
-
-        val customerSlice = buildCustomerSlice(
-            content = listOf(buildCustomer(status = INACTIVE))
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content = listOf(buildCustomer(status = INACTIVE)),
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -235,7 +235,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         } returns customerSlice
 
@@ -252,21 +252,22 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
 
     @Test
     fun `should trim name filter before searching`() {
+        val input =
+            buildFindAllCustomersInput(
+                name = "  Ma  ",
+            )
 
-        val input = buildFindAllCustomersInput(
-            name = "  Ma  "
-        )
-
-        val customerSlice = buildCustomerSlice(
-            content = listOf(buildCustomer(name = "Maria"))
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content = listOf(buildCustomer(name = "Maria")),
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -276,7 +277,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = "Ma",
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         } returns customerSlice
 
@@ -292,27 +293,29 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = "Ma",
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
 
     @Test
     fun `should find customers by partial name successfully`() {
-
         val name = "Ma"
 
-        val input = buildFindAllCustomersInput(
-            name = name
-        )
-
-        val customerSlice = buildCustomerSlice(
-            content = listOf(
-                buildCustomer(name = "Maria"),
-                buildCustomer(name = "Mariana"),
-                buildCustomer(name = "Marinalva")
+        val input =
+            buildFindAllCustomersInput(
+                name = name,
             )
-        )
+
+        val customerSlice =
+            buildCustomerSlice(
+                content =
+                    listOf(
+                        buildCustomer(name = "Maria"),
+                        buildCustomer(name = "Mariana"),
+                        buildCustomer(name = "Marinalva"),
+                    ),
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -322,7 +325,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = name,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         } returns customerSlice
 
@@ -339,19 +342,19 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = name,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
 
     @Test
     fun `should search with null name when name filter is null`() {
-
         val input = buildFindAllCustomersInput()
 
-        val customerSlice = buildCustomerSlice(
-            content = emptyList()
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content = emptyList(),
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -361,7 +364,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         } returns customerSlice
 
@@ -377,21 +380,22 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
 
     @Test
     fun `should search with null name when name filter is blank`() {
+        val input =
+            buildFindAllCustomersInput(
+                name = "  ",
+            )
 
-        val input = buildFindAllCustomersInput(
-            name = "  "
-        )
-
-        val customerSlice = buildCustomerSlice(
-            content = emptyList()
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content = emptyList(),
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -401,7 +405,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         } returns customerSlice
 
@@ -417,21 +421,22 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
 
     @Test
     fun `should find customers with min income successfully`() {
+        val input =
+            buildFindAllCustomersInput(
+                minIncome = BigDecimal("500.00"),
+            )
 
-        val input = buildFindAllCustomersInput(
-            minIncome = BigDecimal("500.00")
-        )
-
-        val customerSlice = buildCustomerSlice(
-            content = listOf(buildCustomer(income = BigDecimal("1000.00")))
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content = listOf(buildCustomer(income = BigDecimal("1000.00"))),
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -441,7 +446,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = BigDecimal("500.00"),
-                maxIncome = null
+                maxIncome = null,
             )
         } returns customerSlice
 
@@ -457,21 +462,22 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = BigDecimal("500.00"),
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
 
     @Test
     fun `should find customers with max income successfully`() {
+        val input =
+            buildFindAllCustomersInput(
+                maxIncome = BigDecimal("100.00"),
+            )
 
-        val input = buildFindAllCustomersInput(
-            maxIncome = BigDecimal("100.00")
-        )
-
-        val customerSlice = buildCustomerSlice(
-            content = listOf(buildCustomer(income = BigDecimal("50.00")))
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content = listOf(buildCustomer(income = BigDecimal("50.00"))),
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -481,7 +487,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = BigDecimal("100.00")
+                maxIncome = BigDecimal("100.00"),
             )
         } returns customerSlice
 
@@ -497,22 +503,23 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = BigDecimal("100.00")
+                maxIncome = BigDecimal("100.00"),
             )
         }
     }
 
     @Test
     fun `should find customers with min and max income successfully`() {
+        val input =
+            buildFindAllCustomersInput(
+                minIncome = BigDecimal("100.00"),
+                maxIncome = BigDecimal("500.00"),
+            )
 
-        val input = buildFindAllCustomersInput(
-            minIncome = BigDecimal("100.00"),
-            maxIncome = BigDecimal("500.00")
-        )
-
-        val customerSlice = buildCustomerSlice(
-            content = listOf(buildCustomer(income = BigDecimal("300.00")))
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content = listOf(buildCustomer(income = BigDecimal("300.00"))),
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -522,7 +529,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = BigDecimal("100.00"),
-                maxIncome = BigDecimal("500.00")
+                maxIncome = BigDecimal("500.00"),
             )
         } returns customerSlice
 
@@ -538,44 +545,44 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = BigDecimal("100.00"),
-                maxIncome = BigDecimal("500.00")
+                maxIncome = BigDecimal("500.00"),
             )
         }
     }
 
     @Test
     fun `should throw exception when min income is negative`() {
-
-        val exception = assertThrows<IllegalArgumentException> {
-            buildFindAllCustomersInput(
-                minIncome = BigDecimal("-1.00")
-            )
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                buildFindAllCustomersInput(
+                    minIncome = BigDecimal("-1.00"),
+                )
+            }
 
         assertThat(exception.message).isEqualTo(MIN_INCOME_MUST_NOT_BE_NEGATIVE)
     }
 
     @Test
     fun `should throw exception when max income is negative`() {
-
-        val exception = assertThrows<IllegalArgumentException> {
-            buildFindAllCustomersInput(
-                maxIncome = BigDecimal("-1.00")
-            )
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                buildFindAllCustomersInput(
+                    maxIncome = BigDecimal("-1.00"),
+                )
+            }
 
         assertThat(exception.message).isEqualTo(MAX_INCOME_MUST_NOT_BE_NEGATIVE)
     }
 
     @Test
     fun `should throw exception when min income is greater than max income`() {
-
-        val exception = assertThrows<IllegalArgumentException> {
-            buildFindAllCustomersInput(
-                minIncome = BigDecimal("500.00"),
-                maxIncome = BigDecimal("100.00")
-            )
-        }
+        val exception =
+            assertThrows<IllegalArgumentException> {
+                buildFindAllCustomersInput(
+                    minIncome = BigDecimal("500.00"),
+                    maxIncome = BigDecimal("100.00"),
+                )
+            }
 
         assertThat(exception.message)
             .isEqualTo(MIN_INCOME_MUST_BE_LESS_THAN_OR_EQUAL_TO_MAX_INCOME)
@@ -583,16 +590,17 @@ class FindAllCustomersUseCaseTest(
 
     @Test
     fun `should return total elements successfully`() {
-
         val input = buildFindAllCustomersInput()
 
-        val customerSlice = buildCustomerSlice(
-            content = listOf(
-                buildCustomer(name = "Maria"),
-                buildCustomer(name = "João")
-            ),
-            totalElements = 5
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content =
+                    listOf(
+                        buildCustomer(name = "Maria"),
+                        buildCustomer(name = "João"),
+                    ),
+                totalElements = 5,
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -602,7 +610,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         } returns customerSlice
 
@@ -619,7 +627,7 @@ class FindAllCustomersUseCaseTest(
                 search = null,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
@@ -628,19 +636,20 @@ class FindAllCustomersUseCaseTest(
     @MethodSource("searchFilters")
     fun `should find customers by search successfully`(
         search: String,
-        assertion: (Customer) -> Boolean
+        assertion: (Customer) -> Boolean,
     ) {
+        val input =
+            buildFindAllCustomersInput(
+                search = search,
+            )
 
-        val input = buildFindAllCustomersInput(
-            search = search
-        )
-
-        val customerSlice = buildCustomerSlice(
-            content = listOf(buildCustomer()),
-            page = 0,
-            size = 30,
-            hasNext = false
-        )
+        val customerSlice =
+            buildCustomerSlice(
+                content = listOf(buildCustomer()),
+                page = 0,
+                size = 30,
+                hasNext = false,
+            )
 
         every {
             customerRepositoryPort.findAll(
@@ -650,7 +659,7 @@ class FindAllCustomersUseCaseTest(
                 search = search,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         } returns customerSlice
 
@@ -667,28 +676,27 @@ class FindAllCustomersUseCaseTest(
                 search = search,
                 name = null,
                 minIncome = null,
-                maxIncome = null
+                maxIncome = null,
             )
         }
     }
 
     companion object {
-
         @JvmStatic
         fun searchFilters(): List<Arguments> =
             listOf(
                 Arguments.of(
                     CUSTOMER_DOCUMENT,
-                    { customer: Customer -> customer.document.value == CUSTOMER_DOCUMENT }
+                    { customer: Customer -> customer.document.value == CUSTOMER_DOCUMENT },
                 ),
                 Arguments.of(
                     CUSTOMER_EMAIL,
-                    { customer: Customer -> customer.email.value == CUSTOMER_EMAIL }
+                    { customer: Customer -> customer.email.value == CUSTOMER_EMAIL },
                 ),
                 Arguments.of(
                     CUSTOMER_PHONE,
-                    { customer: Customer -> customer.phone == CUSTOMER_PHONE }
-                )
+                    { customer: Customer -> customer.phone == CUSTOMER_PHONE },
+                ),
             )
     }
 }

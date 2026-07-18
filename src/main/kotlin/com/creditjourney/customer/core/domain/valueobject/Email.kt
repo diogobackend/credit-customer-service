@@ -4,7 +4,7 @@ import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MU
 import com.creditjourney.customer.core.common.messages.CustomerMessages.EMAIL_MUST_NOT_BE_BLANK
 
 data class Email(
-    val value: String
+    val value: String,
 ) {
     init {
         require(value.isNotBlank()) {

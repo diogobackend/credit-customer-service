@@ -13,5 +13,5 @@ data class CustomerResponse(
     val income: BigDecimal,
     val status: String,
     val createdAt: LocalDateTime,
-    val updatedAt: LocalDateTime?
+    val updatedAt: LocalDateTime?,
 )

@@ -7,5 +7,5 @@ data class CreateCustomerInput(
     val document: String,
     val email: String,
     val phone: String?,
-    val income: BigDecimal
+    val income: BigDecimal,
 )
