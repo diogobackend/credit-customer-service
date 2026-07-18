@@ -1,11 +1,13 @@
 package com.creditjourney.customer.app.configuration
 
+import com.creditjourney.customer.core.port.ChangeCustomerStatusPort
 import com.creditjourney.customer.core.port.CreateCustomerPort
 import com.creditjourney.customer.core.port.DeleteCustomerPort
 import com.creditjourney.customer.core.port.FindAllCustomersPort
 import com.creditjourney.customer.core.port.FindCustomerByIdPort
 import com.creditjourney.customer.core.port.UpdateCustomerPort
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
+import com.creditjourney.customer.core.usecase.ChangeCustomerStatusUseCase
 import com.creditjourney.customer.core.usecase.CreateCustomerUseCase
 import com.creditjourney.customer.core.usecase.DeleteCustomerUseCase
 import com.creditjourney.customer.core.usecase.FindAllCustomersUseCase
@@ -51,6 +53,16 @@ class UseCaseConfiguration {
         customerRepositoryPort: CustomerRepositoryPort
     ): UpdateCustomerPort =
         UpdateCustomerUseCase(
+            findCustomerByIdPort = findCustomerByIdPort,
+            customerRepositoryPort = customerRepositoryPort
+        )
+
+    @Bean
+    fun changeCustomerStatusPort(
+        findCustomerByIdPort: FindCustomerByIdPort,
+        customerRepositoryPort: CustomerRepositoryPort
+    ): ChangeCustomerStatusPort =
+        ChangeCustomerStatusUseCase(
             findCustomerByIdPort = findCustomerByIdPort,
             customerRepositoryPort = customerRepositoryPort
         )

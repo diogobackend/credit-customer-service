@@ -1,7 +1,7 @@
 package com.creditjourney.customer.core.port
 
-import com.creditjourney.customer.core.port.input.DeleteCustomerInput
+import java.util.UUID
 
 interface DeleteCustomerPort {
-    fun delete(input: DeleteCustomerInput)
+    fun delete(customerId: UUID)
 }

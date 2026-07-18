@@ -64,4 +64,7 @@ class CustomerPersistenceAdapter(
             totalElements = result.totalElements
         )
     }
+    override fun deleteById(customerId: UUID) {
+        customerJpaRepository.deleteById(customerId)
+    }
 }

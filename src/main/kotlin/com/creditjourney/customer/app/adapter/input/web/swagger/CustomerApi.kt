@@ -1,5 +1,6 @@
 package com.creditjourney.customer.app.adapter.input.web.swagger
 
+import com.creditjourney.customer.app.adapter.input.web.requests.ChangeCustomerStatusRequest
 import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.requests.UpdateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
@@ -19,6 +20,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import java.math.BigDecimal
@@ -201,23 +203,20 @@ interface CustomerApi {
     ): ResponseEntity<CustomerSliceResponse>
 
     @Operation(
-        summary = "Desabilitar cliente",
-        description = "Altera o status do cliente para INACTIVE ou BLOCKED"
+        summary = "Excluir cliente",
+        description = "Remove definitivamente o cliente do banco de dados"
     )
     @ApiResponses(
         value = [
-            ApiResponse(responseCode = "204", description = "Status alterado com sucesso"),
-            ApiResponse(responseCode = "400", description = "Status inválido"),
-            ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+            ApiResponse(responseCode = "204", description = "Cliente excluído com sucesso"),
+            ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
+            ApiResponse(responseCode = "500", description = "Erro inesperado")
         ]
     )
     @DeleteMapping("/{customerId}")
     fun delete(
-        @Parameter(description = "ID do cliente", example = "0416adad-f623-4622-a6ae-cabd86aab1ae")
-        @PathVariable customerId: UUID,
-
-        @Parameter(description = "Novo status do cliente", example = "INACTIVE")
-        @RequestParam(defaultValue = "INACTIVE") status: CustomerStatus
+        @Parameter(description = "ID do cliente", example = "11111111-1111-1111-1111-111111111111")
+        @PathVariable customerId: UUID
     ): ResponseEntity<Void>
 
     @Operation(
@@ -238,5 +237,24 @@ interface CustomerApi {
         @PathVariable customerId: UUID,
 
         @RequestBody request: UpdateCustomerRequest
+    ): ResponseEntity<CustomerResponse>
+
+    @Operation(
+        summary = "Alterar status do cliente",
+        description = "Altera o status do cliente para ACTIVE, INACTIVE ou BLOCKED"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Status alterado com sucesso"),
+            ApiResponse(responseCode = "400", description = "Status inválido"),
+            ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+        ]
+    )
+    @PutMapping("/{customerId}/status")
+    fun changeStatus(
+        @Parameter(description = "ID do cliente", example = "0416adad-f623-4622-a6ae-cabd86aab1ae")
+        @PathVariable customerId: UUID,
+
+        @RequestBody request: ChangeCustomerStatusRequest
     ): ResponseEntity<CustomerResponse>
 }

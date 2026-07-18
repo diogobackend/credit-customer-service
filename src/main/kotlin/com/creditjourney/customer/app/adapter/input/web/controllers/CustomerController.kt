@@ -3,18 +3,19 @@ package com.creditjourney.customer.app.adapter.input.web.controllers
 import com.creditjourney.customer.app.adapter.input.web.swagger.CustomerApi
 import com.creditjourney.customer.app.adapter.input.web.mappers.toInput
 import com.creditjourney.customer.app.adapter.input.web.mappers.toResponse
+import com.creditjourney.customer.app.adapter.input.web.requests.ChangeCustomerStatusRequest
 import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.requests.UpdateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerSliceResponse
 import com.creditjourney.customer.core.domain.model.CustomerStatus
+import com.creditjourney.customer.core.port.ChangeCustomerStatusPort
 import com.creditjourney.customer.core.port.CreateCustomerPort
 import com.creditjourney.customer.core.port.DeleteCustomerPort
 import com.creditjourney.customer.core.port.input.FindAllCustomersInput
 import com.creditjourney.customer.core.port.FindAllCustomersPort
 import com.creditjourney.customer.core.port.FindCustomerByIdPort
 import com.creditjourney.customer.core.port.UpdateCustomerPort
-import com.creditjourney.customer.core.port.input.DeleteCustomerInput
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -37,7 +39,8 @@ class CustomerController(
     private val findCustomerByIdPort: FindCustomerByIdPort,
     private val findAllCustomersPort: FindAllCustomersPort,
     private val deleteCustomerPort: DeleteCustomerPort,
-    private val updateCustomerPort: UpdateCustomerPort
+    private val updateCustomerPort: UpdateCustomerPort,
+    private val changeCustomerStatusPort: ChangeCustomerStatusPort
 ) : CustomerApi {
 
     @PostMapping
@@ -87,15 +90,9 @@ class CustomerController(
 
     @DeleteMapping("/{customerId}")
     override fun delete(
-        @PathVariable customerId: UUID,
-        @RequestParam(defaultValue = "INACTIVE") status: CustomerStatus
+        @PathVariable customerId: UUID
     ): ResponseEntity<Void> {
-        deleteCustomerPort.delete(
-            DeleteCustomerInput(
-                customerId = customerId,
-                status = status
-            )
-        )
+        deleteCustomerPort.delete(customerId)
 
         return ResponseEntity.noContent().build()
     }
@@ -107,6 +104,17 @@ class CustomerController(
     ): ResponseEntity<CustomerResponse> =
         ResponseEntity.ok(
             updateCustomerPort.update(
+                request.toInput(customerId)
+            ).toResponse()
+        )
+
+    @PutMapping("/{customerId}/status")
+    override fun changeStatus(
+        @PathVariable customerId: UUID,
+        @RequestBody request: ChangeCustomerStatusRequest
+    ): ResponseEntity<CustomerResponse> =
+        ResponseEntity.ok(
+            changeCustomerStatusPort.change(
                 request.toInput(customerId)
             ).toResponse()
         )

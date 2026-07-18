@@ -52,7 +52,7 @@ open class UpdateCustomerUseCase(
 
     private fun validatePhone(customer: Customer, phone: String?) {
         if (
-            !phone.isNullOrBlank() &&
+            phone != null &&
             phone != customer.phone &&
             customerRepositoryPort.existsByPhone(phone)
         ) {

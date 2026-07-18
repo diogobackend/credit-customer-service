@@ -1,11 +1,13 @@
 package com.creditjourney.customer.app.adapter.input.web.mappers
 
+import com.creditjourney.customer.app.adapter.input.web.requests.ChangeCustomerStatusRequest
 import com.creditjourney.customer.app.adapter.input.web.requests.CreateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.requests.UpdateCustomerRequest
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerResponse
 import com.creditjourney.customer.app.adapter.input.web.responses.CustomerSliceResponse
 import com.creditjourney.customer.core.domain.model.Customer
 import com.creditjourney.customer.core.domain.model.CustomerSlice
+import com.creditjourney.customer.core.port.input.ChangeCustomerStatusInput
 import com.creditjourney.customer.core.port.input.CreateCustomerInput
 import com.creditjourney.customer.core.port.input.UpdateCustomerInput
 import java.util.UUID
@@ -48,4 +50,10 @@ fun UpdateCustomerRequest.toInput(customerId: UUID): UpdateCustomerInput =
         email = email,
         phone = phone,
         income = income
+    )
+
+fun ChangeCustomerStatusRequest.toInput(customerId: UUID): ChangeCustomerStatusInput =
+    ChangeCustomerStatusInput(
+        customerId = customerId,
+        status = status
     )

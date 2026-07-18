@@ -24,4 +24,6 @@ interface CustomerRepositoryPort {
             minIncome: BigDecimal?,
             maxIncome: BigDecimal?
         ): CustomerSlice
+
+    fun deleteById(customerId: UUID)
 }

@@ -4,8 +4,8 @@ import com.creditjourney.customer.app.configuration.logs.LogInfo
 import com.creditjourney.customer.app.configuration.logs.LogParameter
 import com.creditjourney.customer.core.port.DeleteCustomerPort
 import com.creditjourney.customer.core.port.FindCustomerByIdPort
-import com.creditjourney.customer.core.port.input.DeleteCustomerInput
 import com.creditjourney.customer.core.port.output.CustomerRepositoryPort
+import java.util.UUID
 
 open class DeleteCustomerUseCase(
     private val findCustomerByIdPort: FindCustomerByIdPort,
@@ -14,11 +14,9 @@ open class DeleteCustomerUseCase(
 
     @LogInfo(logParameters = true)
     override fun delete(
-        @LogParameter input: DeleteCustomerInput
+        @LogParameter customerId: UUID
     ) {
-        val customer = findCustomerByIdPort.findById(input.customerId)
-        val updatedCustomer = customer.changeStatus(input.status)
-
-        customerRepositoryPort.save(updatedCustomer)
+        findCustomerByIdPort.findById(customerId)
+        customerRepositoryPort.deleteById(customerId)
     }
 }
