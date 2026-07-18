@@ -74,35 +74,6 @@ Audit Service registra a jornada
 
 ---
 
-## Status atual
-
-```text
-CRUD básico implementado
-```
-
-Funcionalidades já implementadas:
-
-- criação de cliente;
-- consulta por ID;
-- listagem com paginação;
-- filtros por status, search, name e income;
-- atualização parcial;
-- alteração de status;
-- exclusão real;
-- validações de domínio;
-- exceptions específicas;
-- handler global de erro;
-- Swagger/OpenAPI;
-- Actuator;
-- Flyway;
-- MySQL;
-- testes unitários;
-- JaCoCo;
-- ktlint;
-- logs automáticos com AOP.
-
----
-
 # Arquitetura
 
 Este serviço segue **Arquitetura Hexagonal / Ports and Adapters**.
@@ -337,85 +308,6 @@ jdbc:mysql://localhost:3307/customer_db
 
 ---
 
-## Docker Compose
-
-Arquivo esperado:
-
-```text
-docker-compose.yml
-```
-
-Configuração local do MySQL:
-
-```yaml
-services:
-  mysql:
-    image: mysql:8.4
-    container_name: credit-customer-mysql
-    environment:
-      MYSQL_DATABASE: customer_db
-      MYSQL_USER: customer_user
-      MYSQL_PASSWORD: customer_pass
-      MYSQL_ROOT_PASSWORD: root
-    ports:
-      - "3307:3306"
-```
-
-A porta interna do MySQL continua sendo `3306`, mas na máquina local o acesso é feito pela porta `3307`.
-
----
-
-## application.yml
-
-Arquivo:
-
-```text
-src/main/resources/application.yml
-```
-
-Configuração local:
-
-```yaml
-spring:
-  application:
-    name: credit-customer-service
-
-  datasource:
-    url: jdbc:mysql://localhost:3307/customer_db
-    username: customer_user
-    password: customer_pass
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-
-  flyway:
-    enabled: true
-
-server:
-  port: 8081
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-  endpoint:
-    health:
-      probes:
-        enabled: true
-
-springdoc:
-  swagger-ui:
-    path: /swagger-ui.html
-  api-docs:
-    path: /v3/api-docs
-```
-
----
-
 # Migrations
 
 As migrations ficam em:
@@ -459,28 +351,6 @@ income
 status
 created_at
 updated_at
-```
-
----
-
-# Domínio
-
-## Customer
-
-Representa o cliente dentro do domínio.
-
-Campos principais:
-
-```text
-customerId
-name
-document
-email
-phone
-income
-status
-createdAt
-updatedAt
 ```
 
 ---
