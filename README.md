@@ -3,9 +3,14 @@
 Microservice responsável pelo cadastro, consulta e gerenciamento de clientes dentro da **Credit Journey Platform**.
 
 Doc do sistema completo:
-https://github.com/diogobackend/credit-journey-platform
 
-Este serviço representa o contexto de clientes em uma plataforma fictícia de crédito para banco digital. Ele é o ponto inicial da jornada: antes de avaliar elegibilidade, calcular limite ou enviar comunicações, o cliente precisa existir e ter seus dados cadastrais registrados.
+```text
+https://github.com/diogobackend/credit-journey-platform
+```
+
+Este serviço representa o contexto de clientes em uma plataforma fictícia de crédito para banco digital.
+
+Ele é o ponto inicial da jornada: antes de avaliar elegibilidade, calcular limite ou enviar comunicações, o cliente precisa existir e ter seus dados cadastrais registrados.
 
 ---
 
@@ -15,11 +20,15 @@ O `credit-customer-service` é responsável por:
 
 - cadastrar clientes;
 - consultar clientes;
+- listar clientes com paginação e filtros;
 - atualizar dados cadastrais;
 - alterar status do cliente;
-- registrar histórico de alteração de status;
-- publicar eventos de domínio relacionados ao cliente;
-- servir como origem da jornada de crédito.
+- excluir clientes;
+- validar regras de domínio;
+- expor endpoints REST;
+- versionar banco com Flyway;
+- expor endpoints operacionais com Actuator;
+- gerar logs automáticos nos use cases.
 
 Exemplo prático da jornada:
 
@@ -27,7 +36,7 @@ Exemplo prático da jornada:
 Cliente cadastrado
       |
       v
-Evento CustomerCreated publicado
+Customer Service registra cliente
       |
       v
 Rules Engine avalia elegibilidade
@@ -56,24 +65,64 @@ Audit Service registra a jornada
 - Flyway
 - MySQL
 - Spring Boot Actuator
+- Springdoc OpenAPI / Swagger
 - Docker Compose
+- MockK
+- AssertJ
+- JaCoCo
+- ktlint
 
 ---
 
-## Arquitetura
+## Status atual
+
+```text
+CRUD básico implementado
+```
+
+Funcionalidades já implementadas:
+
+- criação de cliente;
+- consulta por ID;
+- listagem com paginação;
+- filtros por status, search, name e income;
+- atualização parcial;
+- alteração de status;
+- exclusão real;
+- validações de domínio;
+- exceptions específicas;
+- handler global de erro;
+- Swagger/OpenAPI;
+- Actuator;
+- Flyway;
+- MySQL;
+- testes unitários;
+- JaCoCo;
+- ktlint;
+- logs automáticos com AOP.
+
+---
+
+# Arquitetura
 
 Este serviço segue **Arquitetura Hexagonal / Ports and Adapters**.
 
-A regra principal é:
+Regra principal:
 
-> O domínio não deve depender de Spring, banco de dados, HTTP, mensageria ou qualquer detalhe de infraestrutura.
+```text
+O domínio não deve depender de Spring, banco de dados, HTTP, mensageria ou qualquer detalhe de infraestrutura.
+```
 
-Estrutura base:
+---
+
+## Estrutura base
 
 ```text
 src/main/kotlin/com/creditjourney/customer/
 ├── CreditCustomerServiceApplication.kt
 ├── core/
+│   ├── common/
+│   │   └── messages/
 │   ├── domain/
 │   │   ├── model/
 │   │   ├── exception/
@@ -87,9 +136,12 @@ src/main/kotlin/com/creditjourney/customer/
     │   ├── input/
     │   │   ├── messaging/
     │   │   └── web/
-    │   │       ├── mapper/
-    │   │       ├── request/
-    │   │       └── response/
+    │   │       ├── controllers/
+    │   │       ├── handler/
+    │   │       ├── mappers/
+    │   │       ├── requests/
+    │   │       ├── responses/
+    │   │       └── swagger/
     │   └── output/
     │       ├── messaging/
     │       └── persistence/
@@ -97,118 +149,155 @@ src/main/kotlin/com/creditjourney/customer/
     │           ├── mapper/
     │           └── repository/
     └── configuration/
+        └── logs/
 ```
 
 ---
 
 ## Responsabilidade das camadas
 
-### `core/domain`
+### core/domain
 
 Contém os modelos e regras centrais do domínio.
 
-Exemplos futuros:
+Exemplos:
 
-- `Customer`
-- `CustomerStatus`
-- `Document`
-- `Email`
-- `Income`
+```text
+Customer
+CustomerStatus
+Document
+Email
+Income
+```
 
-Essa camada não deve conhecer Spring, JPA, DTOs ou detalhes de infraestrutura.
+Essa camada não deve conhecer Spring, JPA, DTOs, controllers, banco de dados ou qualquer detalhe de infraestrutura.
 
 ---
 
-### `core/port/input`
+### core/port/input
 
 Define o que a aplicação sabe fazer.
 
-Exemplos futuros:
+Exemplos:
 
-- `CreateCustomerPort`
-- `FindCustomerByIdPort`
-- `UpdateCustomerPort`
-- `ChangeCustomerStatusPort`
+```text
+CreateCustomerPort
+FindCustomerByIdPort
+FindAllCustomersPort
+UpdateCustomerPort
+ChangeCustomerStatusPort
+DeleteCustomerPort
+```
+
+Controllers devem chamar portas de entrada.
 
 ---
 
-### `core/port/output`
+### core/port/output
 
 Define o que a aplicação precisa acessar fora do domínio.
 
-Exemplos futuros:
+Exemplo:
 
-- `CustomerRepositoryPort`
-- `CustomerEventPublisherPort`
+```text
+CustomerRepositoryPort
+```
+
+Use cases dependem dessas portas, não de repositories Spring Data diretamente.
 
 ---
 
-### `core/usecase`
+### core/usecase
 
 Contém a implementação dos casos de uso.
 
-Exemplos futuros:
+Exemplos:
 
-- `CreateCustomerUseCase`
-- `FindCustomerByIdUseCase`
-- `UpdateCustomerUseCase`
-- `ChangeCustomerStatusUseCase`
+```text
+CreateCustomerUseCase
+FindCustomerByIdUseCase
+FindAllCustomersUseCase
+UpdateCustomerUseCase
+ChangeCustomerStatusUseCase
+DeleteCustomerUseCase
+```
+
+Aqui ficam as regras de aplicação.
 
 ---
 
-### `app/adapter/input/web`
+### app/adapter/input/web
 
 Camada de entrada HTTP.
 
 Contém:
 
-- controllers;
-- requests;
-- responses;
-- mappers de entrada e saída.
+```text
+controllers
+requests
+responses
+mappers
+handler
+swagger
+```
 
-O controller não executa regra de negócio diretamente. Ele recebe a requisição, valida os dados, converte o payload e chama uma porta de entrada.
+O controller não executa regra de negócio diretamente.
 
----
-
-### `app/adapter/input/messaging`
-
-Camada de entrada assíncrona.
-
-Será usada futuramente caso o serviço precise consumir eventos ou comandos externos.
+Ele recebe a requisição, valida os dados, converte o payload e chama uma porta de entrada.
 
 ---
 
-### `app/adapter/output/persistence`
+### app/adapter/output/persistence
 
 Camada de persistência.
 
 Contém:
 
-- entities JPA;
-- repositories Spring Data;
-- mappers entre Entity e Domain;
-- adapter que implementa a porta de saída.
+```text
+entities JPA
+repositories Spring Data
+mappers Entity <-> Domain
+adapter de persistência
+```
 
 A entity JPA não deve ser usada como modelo de domínio.
 
 ---
 
-### `app/adapter/output/messaging`
+### app/configuration
 
-Camada responsável pela publicação de eventos.
+Contém configurações Spring.
 
-No futuro, este serviço publicará eventos como:
+Exemplos:
 
-- `CustomerCreated`
-- `CustomerUpdated`
-- `CustomerStatusChanged`
+```text
+UseCaseConfiguration
+LogInfoAspect
+```
 
 ---
 
-## Banco de dados
+# Configuração local
 
-Este serviço utiliza banco próprio, seguindo a estratégia **database per service**.
+## Porta da aplicação
+
+A aplicação roda localmente na porta:
+
+```text
+8081
+```
+
+URL base:
+
+```text
+http://localhost:8081
+```
+
+---
+
+## Banco de dados local
+
+Este serviço utiliza banco próprio, seguindo a estratégia `database per service`.
 
 Banco:
 
@@ -216,10 +305,16 @@ Banco:
 customer_db
 ```
 
-Banco local via Docker:
+Host local:
 
 ```text
-localhost:3307/customer_db
+localhost
+```
+
+Porta local:
+
+```text
+3307
 ```
 
 Usuário local:
@@ -232,6 +327,12 @@ Senha local:
 
 ```text
 customer_pass
+```
+
+URL JDBC:
+
+```text
+jdbc:mysql://localhost:3307/customer_db
 ```
 
 ---
@@ -264,7 +365,7 @@ A porta interna do MySQL continua sendo `3306`, mas na máquina local o acesso �
 
 ---
 
-## Configuração da aplicação
+## application.yml
 
 Arquivo:
 
@@ -305,11 +406,17 @@ management:
     health:
       probes:
         enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
 ```
 
 ---
 
-## Migrations
+# Migrations
 
 As migrations ficam em:
 
@@ -321,8 +428,8 @@ Padrão de nome:
 
 ```text
 V1__create_customers_table.sql
-V2__create_customer_status_history_table.sql
-V3__create_outbox_events_table.sql
+V2__add_unique_constraints_to_customers.sql
+V3__create_customers_pagination_index.sql
 ```
 
 Regras:
@@ -334,16 +441,16 @@ Regras:
 
 ---
 
-## Tabelas planejadas
+## Tabela principal
 
-### `customers`
+### customers
 
 Tabela principal de clientes.
 
-Campos previstos:
+Campos principais:
 
 ```text
-id
+customer_id
 name
 document
 email
@@ -356,133 +463,31 @@ updated_at
 
 ---
 
-### `customer_status_history`
+# Domínio
 
-Histórico de alteração de status.
+## Customer
 
-Campos previstos:
+Representa o cliente dentro do domínio.
 
-```text
-id
-customer_id
-previous_status
-current_status
-reason
-changed_at
-```
-
----
-
-### `outbox_events`
-
-Tabela para eventos que serão publicados de forma assíncrona.
-
-Campos previstos:
+Campos principais:
 
 ```text
-id
-event_id
-event_type
-aggregate_id
-payload
+customerId
+name
+document
+email
+phone
+income
 status
-created_at
-published_at
+createdAt
+updatedAt
 ```
 
 ---
 
-## Endpoints planejados
+## CustomerStatus
 
-> Os endpoints abaixo representam a evolução planejada do serviço.  
-> Na versão inicial, o serviço ainda possui apenas endpoints operacionais do Actuator.
-
----
-
-### Criar cliente
-
-```http
-POST /api/v1/customers
-```
-
-Exemplo de request:
-
-```json
-{
-  "name": "João Silva",
-  "document": "12345678900",
-  "email": "joao.silva@email.com",
-  "phone": "11999999999",
-  "income": 4500.00
-}
-```
-
-Exemplo de response:
-
-```json
-{
-  "id": "b7a19e89-61d1-42e7-b7db-5b764a75fb9a",
-  "name": "João Silva",
-  "document": "12345678900",
-  "email": "joao.silva@email.com",
-  "phone": "11999999999",
-  "income": 4500.00,
-  "status": "ACTIVE",
-  "createdAt": "2026-06-07T21:30:00"
-}
-```
-
----
-
-### Consultar cliente por ID
-
-```http
-GET /api/v1/customers/{id}
-```
-
-Exemplo:
-
-```http
-GET /api/v1/customers/b7a19e89-61d1-42e7-b7db-5b764a75fb9a
-```
-
----
-
-### Atualizar cliente
-
-```http
-PUT /api/v1/customers/{id}
-```
-
-Exemplo de request:
-
-```json
-{
-  "name": "João Silva",
-  "email": "joao.novo@email.com",
-  "phone": "11888888888",
-  "income": 5200.00
-}
-```
-
----
-
-### Alterar status do cliente
-
-```http
-PATCH /api/v1/customers/{id}/status
-```
-
-Exemplo de request:
-
-```json
-{
-  "status": "BLOCKED",
-  "reason": "Cliente bloqueado por análise de risco"
-}
-```
-
-Status previstos:
+Status possíveis:
 
 ```text
 ACTIVE
@@ -492,106 +497,68 @@ INACTIVE
 
 ---
 
-## Eventos publicados
+## Value Objects
 
-Este serviço será responsável por publicar eventos de domínio relacionados ao cliente.
+### Document
+
+Responsável por validar documento.
+
+Regras:
+
+- não pode ser vazio;
+- deve conter apenas números;
+- deve possuir 11 dígitos.
 
 ---
 
-### `CustomerCreated`
+### Email
 
-Publicado quando um cliente é criado.
+Responsável por validar e-mail.
 
-Exemplo:
+Regras:
 
-```json
-{
-  "eventId": "6c77b10d-640c-448a-b92f-c70570ec2da9",
-  "eventType": "CustomerCreated",
-  "eventVersion": "1.0",
-  "source": "credit-customer-service",
-  "correlationId": "c5e82d90-91e3-4c3d-9935-e0782e2eb0d1",
-  "occurredAt": "2026-06-07T21:30:00",
-  "payload": {
-    "customerId": "b7a19e89-61d1-42e7-b7db-5b764a75fb9a",
-    "name": "João Silva",
-    "document": "12345678900",
-    "email": "joao.silva@email.com",
-    "income": 4500.00,
-    "status": "ACTIVE"
-  }
-}
+- não pode ser vazio;
+- deve possuir formato válido.
+
+---
+
+### Income
+
+Responsável por validar renda.
+
+Regra:
+
+```text
+Income não pode ser negativo.
 ```
 
 ---
 
-### `CustomerUpdated`
+# API / Swagger
 
-Publicado quando dados relevantes do cliente forem atualizados.
+A documentação completa da API está disponível via Swagger.
 
-Payload previsto:
+Swagger UI:
 
-```json
-{
-  "eventId": "uuid",
-  "eventType": "CustomerUpdated",
-  "eventVersion": "1.0",
-  "source": "credit-customer-service",
-  "correlationId": "uuid",
-  "occurredAt": "2026-06-07T21:35:00",
-  "payload": {
-    "customerId": "uuid",
-    "name": "João Silva",
-    "email": "joao.novo@email.com",
-    "phone": "11888888888",
-    "income": 5200.00
-  }
-}
+```text
+http://localhost:8081/swagger-ui.html
 ```
 
----
+OpenAPI JSON:
 
-### `CustomerStatusChanged`
-
-Publicado quando o status do cliente mudar.
-
-Exemplo:
-
-```json
-{
-  "eventId": "7d217f4b-61bb-4698-a08f-bb14cae7228c",
-  "eventType": "CustomerStatusChanged",
-  "eventVersion": "1.0",
-  "source": "credit-customer-service",
-  "correlationId": "c5e82d90-91e3-4c3d-9935-e0782e2eb0d1",
-  "occurredAt": "2026-06-07T21:40:00",
-  "payload": {
-    "customerId": "b7a19e89-61d1-42e7-b7db-5b764a75fb9a",
-    "previousStatus": "ACTIVE",
-    "currentStatus": "BLOCKED",
-    "reason": "Cliente bloqueado por análise de risco"
-  }
-}
+```text
+http://localhost:8081/v3/api-docs
 ```
 
----
-
-## Integrações futuras
-
-| Serviço | Tipo | Finalidade |
-|---|---|---|
-| credit-rules-engine-service | Kafka | Consumir `CustomerCreated` para avaliar elegibilidade |
-| credit-audit-service | Kafka | Consumir eventos de cliente para montar timeline |
-| credit-config-server | Config Server | Buscar configurações externas |
-| credit-platform-infra | Docker/Kubernetes | Executar infraestrutura local e deploy |
+Os endpoints, contratos de request/response, códigos HTTP e exemplos devem ser consultados diretamente pelo Swagger.
 
 ---
 
-## Actuator
+# Actuator
 
 A aplicação expõe endpoints operacionais.
 
-### Health
+## Health
 
 ```http
 GET /actuator/health
@@ -601,25 +568,17 @@ Exemplo:
 
 ```json
 {
-  "groups": [
-    "liveness",
-    "readiness"
-  ],
   "status": "UP"
 }
 ```
 
----
-
-### Metrics
+## Metrics
 
 ```http
 GET /actuator/metrics
 ```
 
----
-
-### Prometheus
+## Prometheus
 
 ```http
 GET /actuator/prometheus
@@ -627,9 +586,18 @@ GET /actuator/prometheus
 
 ---
 
-## Como rodar localmente
+# Como rodar localmente
 
-### 1. Subir o MySQL
+## 1. Clonar o repositório
+
+```bash
+git clone https://github.com/diogobackend/credit-customer-service.git
+cd credit-customer-service
+```
+
+---
+
+## 2. Subir o MySQL
 
 ```bash
 docker compose up -d
@@ -649,15 +617,7 @@ credit-customer-mysql
 
 ---
 
-### 2. Rodar o build
-
-```bash
-./gradlew clean build
-```
-
----
-
-### 3. Rodar a aplicação
+## 3. Rodar a aplicação
 
 ```bash
 ./gradlew bootRun
@@ -671,7 +631,7 @@ http://localhost:8081
 
 ---
 
-### 4. Validar health
+## 4. Validar health
 
 ```bash
 curl http://localhost:8081/actuator/health
@@ -687,15 +647,17 @@ Esperado:
 
 ---
 
-### 5. Validar métricas
+## 5. Validar Swagger
 
-```bash
-curl http://localhost:8081/actuator/metrics
+Acessar no navegador:
+
+```text
+http://localhost:8081/swagger-ui.html
 ```
 
 ---
 
-### 6. Acessar o MySQL
+## 6. Acessar o MySQL
 
 ```bash
 docker exec -it credit-customer-mysql mysql -u customer_user -pcustomer_pass customer_db
@@ -707,25 +669,27 @@ Dentro do MySQL:
 SHOW TABLES;
 ```
 
-Resultado esperado neste momento inicial:
+---
 
-```text
-flyway_schema_history
+# Comandos mais usados no dia a dia
+
+## Subir infraestrutura local
+
+```bash
+docker compose up -d
 ```
-
-A tabela `flyway_schema_history` indica que o Flyway está ativo.
 
 ---
 
-## Como parar o ambiente
-
-Parar containers:
+## Parar infraestrutura local
 
 ```bash
 docker compose down
 ```
 
-Parar containers e remover volumes:
+---
+
+## Parar e remover volumes
 
 ```bash
 docker compose down -v
@@ -733,50 +697,235 @@ docker compose down -v
 
 ---
 
-## Validações já realizadas
+## Ver logs dos containers
 
-- Aplicação subindo na porta `8081`
-- Actuator `/health` retornando `UP`
-- Actuator `/metrics` retornando métricas
-- MySQL rodando via Docker
-- Flyway criando `flyway_schema_history`
-- Build executado com sucesso
+```bash
+docker compose logs -f
+```
 
 ---
 
-## Boas práticas aplicadas
+## Ver logs do MySQL
 
-- Arquitetura Hexagonal
-- Separação entre domínio e infraestrutura
-- DTOs apenas nas bordas
-- Entidade JPA separada do domínio
-- Mappers explícitos
-- Constructor Injection
-- Flyway para versionamento de banco
-- MySQL isolado para o serviço
-- Actuator para health e métricas
-- Docker Compose para ambiente local
-- Configuração via `application.yml`
+```bash
+docker compose logs -f mysql
+```
 
 ---
 
-## Próximas evoluções
+## Rodar aplicação
 
-- Criar domínio `Customer`
-- Criar enum `CustomerStatus`
-- Criar caso de uso `CreateCustomerUseCase`
-- Criar porta de entrada para criação de cliente
-- Criar porta de saída para persistência
-- Criar migration `customers`
-- Criar adapter REST
-- Criar adapter de persistência
-- Criar endpoint `POST /api/v1/customers`
-- Publicar evento `CustomerCreated`
-- Implementar Outbox Pattern
-- Criar testes unitários e de integração
+```bash
+./gradlew bootRun
+```
 
 ---
 
-## Status
+## Rodar build completo
 
-Em desenvolvimento.
+```bash
+./gradlew clean build
+```
+
+---
+
+## Rodar testes
+
+```bash
+./gradlew test
+```
+
+---
+
+## Rodar testes com relatório JaCoCo
+
+```bash
+./gradlew clean test jacocoTestReport
+```
+
+---
+
+## Abrir relatório JaCoCo
+
+```bash
+xdg-open build/reports/jacoco/test/html/index.html
+```
+
+---
+
+## Rodar ktlint check
+
+```bash
+./gradlew ktlintCheck
+```
+
+---
+
+## Corrigir formatação com ktlint
+
+```bash
+./gradlew ktlintFormat
+```
+
+---
+
+## Rodar validação geral antes de commit
+
+```bash
+./gradlew ktlintFormat
+./gradlew ktlintCheck
+./gradlew clean test jacocoTestReport
+./gradlew clean build
+```
+
+---
+
+## Rodar teste específico
+
+```bash
+./gradlew test --tests "*CreateCustomerUseCaseTest"
+```
+
+Outros exemplos:
+
+```bash
+./gradlew test --tests "*FindCustomerByIdUseCaseTest"
+./gradlew test --tests "*FindAllCustomersUseCaseTest"
+./gradlew test --tests "*UpdateCustomerUseCaseTest"
+./gradlew test --tests "*ChangeCustomerStatusUseCaseTest"
+./gradlew test --tests "*DeleteCustomerUseCaseTest"
+```
+
+---
+
+## Limpar build local
+
+```bash
+./gradlew clean
+```
+
+---
+
+## Ver dependências do projeto
+
+```bash
+./gradlew dependencies
+```
+
+---
+
+## Validar status do Git
+
+```bash
+git status
+```
+
+---
+
+## Criar commit
+
+```bash
+git add .
+git commit -m "feat: implement customer management"
+```
+
+---
+
+## Enviar alterações
+
+```bash
+git push origin master
+```
+
+---
+
+# Logs automáticos
+
+O serviço possui logs automáticos via AOP nos use cases.
+
+Annotations usadas:
+
+```kotlin
+@LogInfo
+@LogParameter
+```
+
+Exemplo:
+
+```kotlin
+@LogInfo(logParameters = true, logReturn = true)
+fun create(@LogParameter input: CreateCustomerInput): Customer
+```
+
+Exemplo de log esperado:
+
+```text
+M=create, parameters={input=CreateCustomerInput(...)}, return=Customer(...)
+```
+
+Futuramente, essa estrutura será extraída para a lib:
+
+```text
+credit-observability-starter
+```
+
+---
+
+# Testes
+
+O projeto usa:
+
+- JUnit 5;
+- MockK;
+- AssertJ;
+- JaCoCo.
+
+Testes principais:
+
+```text
+CreateCustomerUseCaseTest
+FindCustomerByIdUseCaseTest
+FindAllCustomersUseCaseTest
+UpdateCustomerUseCaseTest
+ChangeCustomerStatusUseCaseTest
+DeleteCustomerUseCaseTest
+```
+
+---
+
+# Boas práticas aplicadas
+
+- Arquitetura Hexagonal;
+- Separação entre domínio e infraestrutura;
+- DTOs apenas nas bordas;
+- Entity JPA separada do domínio;
+- Mappers explícitos;
+- Constructor Injection;
+- Flyway para versionamento de banco;
+- MySQL isolado para o serviço;
+- Actuator para health e métricas;
+- Swagger para documentação da API;
+- Docker Compose para ambiente local;
+- Configuração via `application.yml`;
+- Testes unitários com MockK;
+- JaCoCo para cobertura;
+- ktlint para padronização de código;
+- Logs automáticos com AOP.
+
+---
+
+# Próximas evoluções
+
+- Publicar evento `CustomerCreated`;
+- Publicar evento `CustomerUpdated`;
+- Publicar evento `CustomerStatusChanged`;
+- Publicar evento `CustomerDeleted`;
+- Implementar Outbox Pattern;
+- Integrar com Kafka;
+- Propagar `correlationId`;
+- Extrair logs automáticos para `credit-observability-starter`;
+- Criar testes de integração;
+- Criar Dockerfile;
+- Integrar com infraestrutura compartilhada.
+
+---
